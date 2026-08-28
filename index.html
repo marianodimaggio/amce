@@ -59,7 +59,7 @@
 
   /* ---------- marca ---------- */
   .marca{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
-  .marca svg{width:28px;height:28px;display:block;}
+  .marca img{width:28px;height:28px;border-radius:8px;display:block;}
   .marca .w{font-weight:800;font-size:21px;letter-spacing:-.02em;}
   .marca .sp{flex:1;}
 
@@ -210,10 +210,7 @@
   <section class="pantalla on" id="hoy">
     <div class="scroll">
       <div class="marca">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="AMCE">
-          <rect width="100" height="100" rx="24" fill="#2B2B29"/>
-          <path d="M50 20 L80 82 H60 L50 58 L40 82 H20 Z M50 44 L57 62 H43 Z" fill="#F7E1A0" fill-rule="evenodd"/>
-        </svg>
+        <img src="icon-192.png" alt="AMCE" width="28" height="28">
         <span class="w">AMCE</span>
         <span class="sp"></span>
         <button class="link" data-ver="menuHist">Progreso</button>
