@@ -79,6 +79,32 @@
   .wordmark{font-size:44px;font-weight:800;letter-spacing:-.04em;margin:22px 0 0;}
   .bajada{color:var(--ink2);font-size:15.5px;margin:8px 0 0;max-width:260px;}
 
+  /* ---------- selector de semana ---------- */
+  .semanas{display:flex;gap:8px;margin-top:18px;}
+  .semanas button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink2);
+    border-radius:12px;padding:11px 4px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+  .semanas button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+  .semanas button .s{display:block;font-size:9.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;opacity:.6;}
+
+  /* ---------- tarjetas de jornada ---------- */
+  .jornada{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:15px 16px;
+    margin-top:10px;color:var(--ink);font-family:inherit;cursor:pointer;}
+  .jornada[aria-pressed="true"]{border-color:var(--ink);border-width:1.5px;}
+  .jornada .num{width:32px;height:32px;flex:0 0 32px;border-radius:10px;background:var(--cream);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;}
+  .jornada[aria-pressed="true"] .num{background:var(--amarillo);border-color:var(--amarillo);}
+  .jornada.hecha .num{background:var(--amarillo2);border-color:var(--amarillo2);}
+  .jornada .cuerpo{flex:1;min-width:0;}
+  .jornada .tit{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
+  .jornada .gs{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+  .jornada .gs span{font-size:11px;font-weight:600;color:var(--ink2);background:var(--cream);
+    border:1px solid var(--line);border-radius:6px;padding:2px 7px;}
+  .jornada .marcaHecha{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dim);flex:0 0 auto;padding-top:8px;}
+
   /* ---------- aviso sin conexión ---------- */
   #sinRed{position:absolute;left:0;right:0;top:0;z-index:70;background:var(--ink);
     color:var(--cream);font-size:12.5px;font-weight:600;text-align:center;
@@ -272,12 +298,14 @@
 
       <span class="eyebrow" id="fecha"></span>
       <h1>Hola, Emi</h1>
-      <div class="chip"><span id="diaNum"></span></div>
 
-      <div class="tarjeta">
+      <div class="semanas" id="semanas"></div>
+      <div id="jornadas"></div>
+
+      <div class="tarjeta" id="tarjetaEj">
         <div class="split">
           <div>
-            <span class="eyebrow">Lo de hoy</span>
+            <span class="eyebrow">Lo que vas a hacer</span>
             <h2 style="margin-top:3px" id="diaTitulo"></h2>
           </div>
           <span class="muted">7 ejercicios</span>
@@ -357,6 +385,7 @@
     <div class="scroll">
       <span class="eyebrow">Terminaste</span>
       <h1 id="tituloCierre"></h1>
+      <p class="muted" id="subCierre" style="margin-top:6px"></p>
 
       <div class="tarjeta">
         <div class="dato"><span class="muted">Series completadas</span><span class="v" id="resumenSeries"></span></div>

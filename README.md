@@ -56,7 +56,16 @@ const BASE_IMG = './img/';
 
 ## Estructura de la rutina
 
-Tres días. Cada día tiene siempre la misma forma:
+**Cuatro semanas, tres jornadas cada una: doce sesiones en total.** Cada semana cambia
+los grupos musculares y los ejercicios, pero todas cubren el cuerpo entero — siempre hay
+una jornada de piernas, una de empuje y una de tracción. Si una semana se quedara sin
+piernas, serían catorce días sin entrenarlas.
+
+La app propone la semana y la jornada que siguen, y Emilia puede elegir cualquier otra
+desde la pantalla de inicio. La semana avanza cada tres sesiones y vuelve a la 1 después
+de la cuarta.
+
+Cada jornada tiene siempre la misma forma:
 
 1. Cardio suave, 3 minutos
 2. Un ejercicio de zona media
@@ -72,14 +81,11 @@ hecha sin cargar repeticiones, ni sin cargar peso cuando el ejercicio lleva carg
 
 Cosas que quedaron abiertas y conviene resolver antes de darle mucho uso:
 
-- **La agrupación de los días** (empuje / tracción / piernas) no está confirmada con Emilia.
-  Cambiarla es reordenar las listas de `DIAS` en `datos.js`.
+- **Los grupos de cada jornada** los definí yo. Cambiarlos es editar `SEMANAS` en `datos.js`.
 - **Las claves de técnica** de cada ejercicio las escribí sin formación específica.
   Deberían revisarse con un profesional, sobre todo por el antecedente lumbar.
 - **El catálogo de ejercicios** debería ser revisado por un kinesiólogo o profesor de
   educación física: qué entra, qué entra con tope de carga y qué sale. Los ejercicios con
   exigencia lumbar están marcados con `lumbar: true`.
-- **La rotación automática por bloque** (cambiar los ejercicios cada dos semanas) todavía
-  no está. Hoy los tres días son fijos y se rotan a mano desde `datos.js`.
 - **Las fotos son de modelos hombres.** Los bancos con modelos mujeres son pagos.
   Reemplazarlas es cambiar el contenido de `img/`, no tocar código.

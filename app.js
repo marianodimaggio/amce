@@ -49,12 +49,23 @@ function fechaLarga() {
   return dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
 }
 
-/* Qué día toca: el siguiente al último que completó. */
-function diaDeHoy() {
-  const ult = datos.sesiones[datos.sesiones.length - 1];
-  if (!ult) return DIAS[0];
-  const idx = DIAS.findIndex(d => d.n === ult.dia);
-  return DIAS[(idx + 1) % DIAS.length];
+/* La semana avanza cada tres sesiones completadas y vuelve a la 1
+   después de la cuarta. Es solo una propuesta: Emilia puede elegir
+   cualquier semana y cualquier jornada. */
+function semanaSugerida() {
+  return Math.floor(datos.sesiones.length / 3) % SEMANAS.length;
+}
+
+/* La jornada que sigue dentro de esa semana. */
+function jornadaSugerida() {
+  return datos.sesiones.length % 3;
+}
+
+/* Jornadas ya hechas de una semana, para marcarlas en la pantalla. */
+function jornadasHechas(nSemana) {
+  const hechas = new Set();
+  datos.sesiones.forEach(s => { if (s.semana === nSemana) hechas.add(s.jornada); });
+  return hechas;
 }
 
 /* Último peso usado en un ejercicio, mirando todas las sesiones. */
@@ -83,7 +94,8 @@ function historial(idEjercicio) {
 
 /* ---------- estado de la sesión en curso ---------- */
 
-let dia = null;      // día que se está haciendo
+let jornada = null;  // jornada que se está haciendo
+let nSemana = null;  // número de semana de esa jornada
 let plan = [];       // ejercicios de la sesión, ya resueltos contra el catálogo
 let i = 0;           // ejercicio actual
 
@@ -122,31 +134,84 @@ function ver(id) {
    PANTALLA: HOY
    ============================================================ */
 
-function pintarHoy() {
-  const d = diaDeHoy();
-  $('#fecha').textContent = fechaLarga();
-  $('#diaNum').textContent = 'Día ' + d.n + ' de 3';
-  $('#diaTitulo').textContent = d.titulo;
+let semanaVista = 0;      // índice de la semana que se está mirando
+let jornadaElegida = 0;   // índice de la jornada seleccionada
 
-  $('#listaHoy').innerHTML = d.ejercicios.map((item, k) => {
+function pintarSemanas() {
+  $('#semanas').innerHTML = SEMANAS.map((s, k) =>
+    '<button data-semana="' + k + '" aria-pressed="' + (k === semanaVista) + '">' +
+      '<span class="s">Semana</span>' + s.n +
+    '</button>').join('');
+}
+
+function pintarJornadas() {
+  const semana = SEMANAS[semanaVista];
+  const hechas = jornadasHechas(semana.n);
+  $('#jornadas').innerHTML = semana.jornadas.map((j, k) => {
+    const hecha = hechas.has(j.n);
+    return '<button class="jornada' + (hecha ? ' hecha' : '') + '" data-jornada="' + k + '" ' +
+      'aria-pressed="' + (k === jornadaElegida) + '">' +
+      '<span class="num">' + j.n + '</span>' +
+      '<span class="cuerpo">' +
+        '<span class="tit">' + j.titulo + '</span>' +
+        '<span class="gs">' + j.grupos.map(g => '<span>' + g + '</span>').join('') + '</span>' +
+      '</span>' +
+      (hecha ? '<span class="marcaHecha">hecha</span>' : '') +
+      '</button>';
+  }).join('');
+}
+
+function pintarListaEjercicios() {
+  const j = SEMANAS[semanaVista].jornadas[jornadaElegida];
+  $('#diaTitulo').textContent = j.titulo;
+  $('#listaHoy').innerHTML = j.ejercicios.map((item, k) => {
     const cat = CATALOGO[item.id];
     const meta = item.minutos ? item.minutos + ' min'
       : (cat.tiempo ? item.series + ' × ' + item.reps + '″' : item.series + ' × ' + item.reps);
-    const clase = item.minutos || cat.slot === 'ZONA MEDIA' ? ' class="pre"' : '';
+    const clase = (item.minutos || cat.slot === 'ZONA MEDIA') ? ' class="pre"' : '';
     const tag = cat.lumbar ? '<span class="tag">LUMBAR</span>' : '';
     return '<li' + clase + '><span class="idx">' + String(k + 1).padStart(2, '0') + '</span>' +
       '<span class="nm">' + cat.nombre + tag + '</span>' +
       '<span class="sr">' + meta + '</span></li>';
   }).join('');
+}
 
-  // últimas seis sesiones
+function pintarRacha() {
   const ult = datos.sesiones.slice(-6);
-  $('#racha').innerHTML = Array.from({ length: 6 }, (_, k) => {
-    const hecha = k >= 6 - ult.length;
-    return '<i class="punto' + (hecha ? ' hecho' : '') + '"></i>';
-  }).join('') + '<span class="muted" style="margin-left:8px;font-size:13px">' +
+  $('#racha').innerHTML = Array.from({ length: 6 }, (_, k) =>
+    '<i class="punto' + (k >= 6 - ult.length ? ' hecho' : '') + '"></i>').join('') +
+    '<span class="muted" style="margin-left:8px;font-size:13px">' +
     datos.sesiones.length + (datos.sesiones.length === 1 ? ' sesión' : ' sesiones') + '</span>';
 }
+
+function pintarHoy() {
+  $('#fecha').textContent = fechaLarga();
+  semanaVista = semanaSugerida();
+  jornadaElegida = jornadaSugerida();
+  pintarSemanas();
+  pintarJornadas();
+  pintarListaEjercicios();
+  pintarRacha();
+}
+
+$('#semanas').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-semana]');
+  if (!b) return;
+  semanaVista = +b.dataset.semana;
+  jornadaElegida = 0;
+  pintarSemanas();
+  pintarJornadas();
+  pintarListaEjercicios();
+});
+
+$('#jornadas').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-jornada]');
+  if (!b) return;
+  jornadaElegida = +b.dataset.jornada;
+  pintarJornadas();
+  pintarListaEjercicios();
+  $('#tarjetaEj').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
 
 /* ============================================================
    PANTALLA: EJERCICIO
@@ -365,7 +430,8 @@ function pintarCierre() {
   });
   $('#resumenSubio').textContent = subio === 0 ? 'Ninguno' :
     subio + (subio === 1 ? ' ejercicio' : ' ejercicios');
-  $('#tituloCierre').textContent = 'Día ' + dia.n + ' · ' + dia.titulo;
+  $('#tituloCierre').textContent = jornada.titulo;
+  $('#subCierre').textContent = 'Semana ' + nSemana + ' · jornada ' + jornada.n;
 }
 
 $('#escala').addEventListener('click', ev => {
@@ -378,8 +444,9 @@ $('#btnGuardar').addEventListener('click', () => {
   const lumbar = $('#escala button[aria-pressed="true"]');
   const sesion = {
     fecha: hoyISO(),
-    dia: dia.n,
-    titulo: dia.titulo,
+    semana: nSemana,
+    jornada: jornada.n,
+    titulo: jornada.titulo,
     lumbar: lumbar ? +lumbar.dataset.v : null,
     ejercicios: plan.filter(e => e.series).map(e => ({
       id: e.id,
@@ -486,8 +553,10 @@ $('#archivoImportar').addEventListener('change', ev => {
    ============================================================ */
 
 $('#btnEmpezar').addEventListener('click', () => {
-  dia = diaDeHoy();
-  plan = armarPlan(dia);
+  const semana = SEMANAS[semanaVista];
+  nSemana = semana.n;
+  jornada = semana.jornadas[jornadaElegida];
+  plan = armarPlan(jornada);
   i = 0;
   ver('ejercicio');
   pintarEjercicio();
