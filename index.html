@@ -72,6 +72,29 @@
     font-weight:600;padding:6px 0;cursor:pointer;}
 
   /* ---------- marca ---------- */
+  /* ---------- portada ---------- */
+  .portada{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:var(--pad);text-align:center;}
+  .logoGrande{width:104px;height:104px;border-radius:26px;display:block;}
+  .wordmark{font-size:44px;font-weight:800;letter-spacing:-.04em;margin:22px 0 0;}
+  .bajada{color:var(--ink2);font-size:15.5px;margin:8px 0 0;max-width:260px;}
+
+  /* ---------- código ---------- */
+  .puntos{display:flex;gap:14px;justify-content:center;margin:34px 0 0;}
+  .puntos i{width:15px;height:15px;border-radius:50%;background:transparent;
+    border:2px solid var(--line);transition:background .15s,border-color .15s;}
+  .puntos i.lleno{background:var(--ink);border-color:var(--ink);}
+  .errorCodigo{text-align:center;color:var(--tierra);font-size:13.5px;font-weight:600;
+    margin:14px 0 0;min-height:20px;}
+  .teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px auto 0;max-width:300px;}
+  .teclado button{aspect-ratio:1/1;border-radius:50%;background:var(--paper);
+    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:26px;
+    font-weight:600;cursor:pointer;}
+  .teclado button:active{background:var(--amarillo);border-color:var(--amarillo);}
+  .teclado button.borrar{background:none;border-color:transparent;font-size:22px;color:var(--ink2);}
+  .sacudir{animation:sacudir .32s;}
+  @keyframes sacudir{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
   .marca{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
   .marca img{width:28px;height:28px;border-radius:8px;display:block;}
   .marca .w{font-weight:800;font-size:21px;letter-spacing:-.02em;}
@@ -220,8 +243,54 @@
 <body>
 <div class="app">
 
+  <!-- ===================== PORTADA ===================== -->
+  <section class="pantalla on" id="portada">
+    <div class="portada">
+      <img class="logoGrande" src="icon-512.png" alt="AMCE" width="104" height="104">
+      <h1 class="wordmark">AMCE</h1>
+      <p class="bajada">Tu rutina del gimnasio, día por día</p>
+    </div>
+    <div class="pie"><button class="cta" id="btnEntrar">Entrar</button></div>
+  </section>
+
+  <!-- ===================== CÓDIGO ===================== -->
+  <section class="pantalla" id="acceso">
+    <div class="barraSup">
+      <button class="link" data-ver="portada">← Volver</button>
+    </div>
+    <div class="scroll" style="display:flex;flex-direction:column;justify-content:center">
+      <h1 style="text-align:center" id="tituloAcceso">Poné tu código</h1>
+      <p class="muted" style="text-align:center;margin:8px 0 0" id="bajadaAcceso">Seis números. Se pide una sola vez.</p>
+
+      <div id="zonaCara" style="display:none;text-align:center;margin-top:30px">
+        <button class="cta" id="btnCara">Entrar con Face ID</button>
+        <button class="link" id="btnUsarCodigo" style="margin-top:16px">Usar el código</button>
+      </div>
+
+      <div id="zonaCodigo">
+        <div class="puntos" id="puntos"></div>
+        <p class="errorCodigo" id="errorCodigo"></p>
+
+        <div class="teclado" id="teclado">
+          <button data-t="1">1</button><button data-t="2">2</button><button data-t="3">3</button>
+          <button data-t="4">4</button><button data-t="5">5</button><button data-t="6">6</button>
+          <button data-t="7">7</button><button data-t="8">8</button><button data-t="9">9</button>
+          <span></span><button data-t="0">0</button><button data-t="borrar" class="borrar">←</button>
+        </div>
+      </div>
+
+      <div id="ofertaCara" style="display:none;text-align:center">
+        <p class="muted" style="margin:26px 0 0">La próxima vez podés entrar mirando la pantalla,
+          sin escribir el código.</p>
+        <button class="cta" id="btnActivarCara" style="margin-top:18px">Activar Face ID</button>
+        <button class="link" id="btnAhoraNo" style="margin-top:16px">Ahora no</button>
+      </div>
+    </div>
+  </section>
+
+
   <!-- ===================== HOY ===================== -->
-  <section class="pantalla on" id="hoy">
+  <section class="pantalla" id="hoy">
     <div class="scroll">
       <div class="marca">
         <img src="icon-192.png" alt="AMCE" width="28" height="28">

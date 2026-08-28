@@ -498,5 +498,193 @@ $$('[data-ver]').forEach(b => b.addEventListener('click', () => {
   ver(b.dataset.ver);
 }));
 
+/* ============================================================
+   ACCESO
+   El código se compara cifrado. Una vez validado, el teléfono
+   queda desbloqueado y no se vuelve a pedir.
+   ============================================================ */
+
+const CLAVE_ACCESO = 'amce.acceso';
+
+function cifrar(txt) {
+  let x = 5381;
+  for (let i = 0; i < txt.length; i++) x = ((x << 5) + x + txt.charCodeAt(i)) >>> 0;
+  let y = x;
+  for (let i = 0; i < 5; i++) y = ((y << 5) + y + txt.charCodeAt(i % txt.length) + i) >>> 0;
+  return x.toString(16) + '-' + y.toString(16);
+}
+
+function yaDesbloqueado() {
+  try { return localStorage.getItem(CLAVE_ACCESO) === 'ok'; } catch (e) { return false; }
+}
+
+function desbloquear() {
+  try { localStorage.setItem(CLAVE_ACCESO, 'ok'); } catch (e) { /* sigue igual */ }
+}
+
+let tecleado = '';
+
+function pintarPuntos() {
+  $('#puntos').innerHTML = Array.from({ length: 6 }, (_, k) =>
+    '<i class="' + (k < tecleado.length ? 'lleno' : '') + '"></i>').join('');
+}
+
+function entrarALaApp() {
+  pintarHoy();
+  pintarMenuHistorial();
+  ver('hoy');
+}
+
+$('#teclado').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-t]');
+  if (!b) return;
+  const t = b.dataset.t;
+
+  if (t === 'borrar') {
+    tecleado = tecleado.slice(0, -1);
+    $('#errorCodigo').textContent = '';
+    pintarPuntos();
+    return;
+  }
+  if (tecleado.length >= 6) return;
+
+  tecleado += t;
+  pintarPuntos();
+
+  if (tecleado.length === 6) {
+    if (CODIGOS.includes(cifrar(tecleado))) {
+      tecleado = '';
+      despuesDelCodigo();
+    } else {
+      $('#errorCodigo').textContent = 'Ese código no es. Probá de nuevo.';
+      $('#puntos').classList.add('sacudir');
+      setTimeout(() => {
+        $('#puntos').classList.remove('sacudir');
+        tecleado = '';
+        pintarPuntos();
+      }, 340);
+    }
+  }
+});
+
+$('#btnEntrar').addEventListener('click', abrirAcceso);
+
+/* ============================================================
+   FACE ID
+   Usa el mismo mecanismo que las claves de acceso de iPhone.
+   Como no hay servidor que valide la firma, la seguridad real es
+   la misma que la del código: sirve para frenar a un curioso.
+   Lo que gana es comodidad.
+   ============================================================ */
+
+const CLAVE_CARA = 'amce.cara';
+
+const b64 = {
+  guardar: buf => btoa(String.fromCharCode.apply(null, new Uint8Array(buf))),
+  leer: txt => Uint8Array.from(atob(txt), c => c.charCodeAt(0))
+};
+
+const credencial = () => { try { return localStorage.getItem(CLAVE_CARA); } catch (e) { return null; } };
+
+async function caraDisponible() {
+  if (!window.PublicKeyCredential || !window.isSecureContext) return false;
+  try { return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }
+  catch (e) { return false; }
+}
+
+async function registrarCara() {
+  const cred = await navigator.credentials.create({
+    publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: 'AMCE' },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'emi', displayName: 'Emi' },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+      attestation: 'none',
+      timeout: 60000
+    }
+  });
+  localStorage.setItem(CLAVE_CARA, b64.guardar(cred.rawId));
+}
+
+async function pedirCara() {
+  const id = credencial();
+  if (!id) return false;
+  await navigator.credentials.get({
+    publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials: [{ type: 'public-key', id: b64.leer(id) }],
+      userVerification: 'required',
+      timeout: 60000
+    }
+  });
+  return true;
+}
+
+/* ---------- qué mostrar al tocar Entrar ---------- */
+
+function mostrarZona(cual) {
+  $('#zonaCara').style.display   = cual === 'cara'   ? '' : 'none';
+  $('#zonaCodigo').style.display = cual === 'codigo' ? '' : 'none';
+  $('#ofertaCara').style.display = cual === 'oferta' ? '' : 'none';
+}
+
+async function abrirAcceso() {
+  tecleado = '';
+  $('#errorCodigo').textContent = '';
+  pintarPuntos();
+
+  if (credencial()) {
+    $('#tituloAcceso').textContent = 'Hola, Emi';
+    $('#bajadaAcceso').textContent = 'Mirá la pantalla para entrar.';
+    mostrarZona('cara');
+    ver('acceso');
+    intentarCara();
+    return;
+  }
+  if (yaDesbloqueado()) { entrarALaApp(); return; }
+
+  $('#tituloAcceso').textContent = 'Poné tu código';
+  $('#bajadaAcceso').textContent = 'Seis números. Se pide una sola vez.';
+  mostrarZona('codigo');
+  ver('acceso');
+}
+
+async function intentarCara() {
+  try {
+    if (await pedirCara()) entrarALaApp();
+  } catch (e) {
+    // canceló o falló: queda el botón para reintentar
+  }
+}
+
+$('#btnCara').addEventListener('click', intentarCara);
+
+$('#btnUsarCodigo').addEventListener('click', () => {
+  $('#tituloAcceso').textContent = 'Poné tu código';
+  $('#bajadaAcceso').textContent = 'Seis números.';
+  mostrarZona('codigo');
+});
+
+$('#btnActivarCara').addEventListener('click', async () => {
+  try { await registrarCara(); } catch (e) { /* si falla, sigue con el código */ }
+  entrarALaApp();
+});
+
+$('#btnAhoraNo').addEventListener('click', entrarALaApp);
+
+/* Después de acertar el código, ofrecer Face ID una sola vez. */
+async function despuesDelCodigo() {
+  desbloquear();
+  if (!credencial() && await caraDisponible()) {
+    $('#tituloAcceso').textContent = 'Listo';
+    $('#bajadaAcceso').textContent = '';
+    mostrarZona('oferta');
+  } else {
+    entrarALaApp();
+  }
+}
+
+pintarPuntos();
 pintarHoy();
 pintarMenuHistorial();
