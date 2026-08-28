@@ -590,5 +590,30 @@ async function abrirAcceso() {
   intentarCara();
 }
 
+/* ============================================================
+   FUNCIONAMIENTO SIN CONEXIÓN
+   ============================================================ */
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(e => {
+      console.warn('No se pudo activar el modo sin conexión:', e);
+    });
+  });
+}
+
+function avisarConexion() {
+  const previo = $('#sinRed');
+  if (navigator.onLine) { if (previo) previo.remove(); return; }
+  if (previo) return;
+  const a = document.createElement('div');
+  a.id = 'sinRed';
+  a.textContent = 'Sin conexión. Se guarda todo igual.';
+  document.querySelector('.app').appendChild(a);
+}
+window.addEventListener('online', avisarConexion);
+window.addEventListener('offline', avisarConexion);
+avisarConexion();
+
 $('#btnCara').addEventListener('click', intentarCara);
 $('#btnEntrar').addEventListener('click', abrirAcceso);
