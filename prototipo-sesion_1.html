@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F7F3E9">
+<title>AMCE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F3E9; --paper:#FFFFFF; --sand:#FBF7EF;
+    --ink:#2B2B29; --ink2:#57544D; --dim:#7A776E; --line:#E7E0D0;
+    --amarillo:#F7E1A0; --amarillo2:#EFCB63; --tierra:#B5713A;
+    --pad:20px; --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);color:var(--ink);
+    font-family:'Poppins',system-ui,-apple-system,sans-serif;
+    font-size:16px;line-height:1.5;
+    display:flex;justify-content:center;min-height:100vh;
+  }
+  .app{
+    width:100%;max-width:430px;background:var(--cream);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:100vh;
+  }
+  @media(min-width:700px){
+    .app{margin:24px 0 48px;min-height:880px;max-height:880px;border-radius:34px;
+      border:1px solid var(--line);box-shadow:0 24px 60px rgba(43,43,41,.16);}
+  }
+  .pantalla{display:none;flex-direction:column;flex:1;min-height:0;}
+  .pantalla.on{display:flex;}
+  .scroll{flex:1;overflow-y:auto;padding:var(--pad) var(--pad) 128px;}
+
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:4px 0 0;}
+  h2{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0;}
+  .muted{color:var(--ink2);font-size:14px;}
+  .vacio{color:var(--ink2);font-size:14.5px;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--r);padding:20px;margin-top:20px;}
+
+  .barraSup{display:flex;align-items:center;justify-content:space-between;padding:16px var(--pad) 0;}
+  .link{background:none;border:none;color:var(--ink2);font-family:inherit;font-size:14px;
+    font-weight:600;padding:6px 0;cursor:pointer;}
+
+  /* ---------- marca ---------- */
+  .marca{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
+  .marca svg{width:28px;height:28px;display:block;}
+  .marca .w{font-weight:800;font-size:21px;letter-spacing:-.02em;}
+  .marca .sp{flex:1;}
+
+  /* ---------- hoy ---------- */
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--amarillo);
+    border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600;margin-top:14px;}
+  .tarjeta{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:16px;}
+  .tarjeta .split{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+  .lista{margin:16px 0 0;padding:0;list-style:none;}
+  .lista li{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:14.5px;}
+  .lista li:first-child{border-top:none;}
+  .lista .idx{font-size:12px;font-weight:700;color:var(--dim);width:20px;flex:0 0 20px;}
+  .lista .nm{flex:1;}
+  .lista li.pre .nm{color:var(--tierra);font-weight:600;}
+  .lista .sr{font-size:14px;font-weight:700;}
+  .tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;
+    border-radius:5px;background:rgba(181,113,58,.12);color:var(--tierra);margin-left:7px;vertical-align:1px;}
+  .racha{display:flex;gap:6px;margin-top:18px;align-items:center;}
+  .punto{width:26px;height:26px;border-radius:8px;background:var(--paper);border:1px solid var(--line);}
+  .punto.hecho{background:var(--amarillo2);border-color:var(--amarillo2);}
+
+  .pie{position:absolute;left:0;right:0;bottom:0;padding:14px var(--pad) 24px;
+    background:linear-gradient(to top,var(--cream) 64%,rgba(247,243,233,0));}
+  .cta{width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:15px;
+    padding:19px;font-family:inherit;font-size:16.5px;font-weight:700;cursor:pointer;}
+  .cta:active{transform:scale(.985);}
+  .cta.suave{background:var(--paper);color:var(--ink);border:1px solid var(--line);font-weight:600;}
+
+  /* ---------- ejercicio ---------- */
+  .barra{display:flex;gap:4px;padding:14px var(--pad) 0;}
+  .barra i{flex:1;height:3px;border-radius:2px;background:var(--line);}
+  .barra i.hecho{background:var(--amarillo2);}
+  .barra i.ahora{background:var(--ink);}
+  .nombreEj{font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.14;margin:5px 0 0;}
+
+  .acciones{display:flex;gap:10px;padding-top:16px;}
+  .acciones button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink2);
+    border-radius:12px;padding:13px 8px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;}
+  .acciones button.prim{background:var(--amarillo);border-color:var(--amarillo);color:var(--ink);font-weight:700;}
+
+  .cardio{text-align:center;background:var(--amarillo);border-radius:var(--r);padding:26px 14px;margin-top:18px;}
+  .cardio .n{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:4px;}
+
+  .series{padding:22px 0 0;}
+  .series .cabLista{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .objetivo{color:var(--ink2);font-size:13.5px;margin:0 0 14px;}
+  .objetivo b{font-weight:700;}
+
+  .serie{border:1px solid var(--line);border-radius:15px;margin-bottom:10px;background:var(--paper);overflow:hidden;}
+  .serie .cab{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;}
+  .serie .n{font-size:10.5px;font-weight:700;letter-spacing:.13em;color:var(--dim);flex:0 0 58px;}
+  .serie .val{flex:1;font-weight:700;font-size:16.5px;}
+  .serie .val .u{color:var(--dim);font-size:11.5px;font-weight:700;}
+  .serie .val.espera{color:var(--dim);font-weight:500;font-size:14px;}
+  .serie .tick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:0 0 26px;position:relative;}
+  .serie.hecha{border-left:4px solid var(--amarillo2);background:var(--sand);}
+  .serie.hecha .tick{background:var(--amarillo2);border-color:var(--amarillo2);}
+  .serie.hecha .tick::after{content:'';position:absolute;left:8px;top:4px;width:6px;height:11px;
+    border:2.5px solid var(--ink);border-top:0;border-left:0;transform:rotate(42deg);}
+  .serie.pend{opacity:.45;}
+  .serie.act{border-color:var(--ink);border-width:1.5px;}
+  .serie .cuerpo{display:none;padding:0 16px 16px;}
+  .serie.act .cuerpo{display:block;}
+
+  .campos{display:flex;gap:10px;}
+  .campo{flex:1;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:10px;}
+  .campo .k{display:block;font-size:9.5px;font-weight:700;letter-spacing:.13em;color:var(--dim);
+    text-align:center;margin-bottom:7px;}
+  .campo .ctl{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+  .campo .ctl button{width:44px;height:44px;border-radius:12px;background:var(--paper);
+    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:21px;font-weight:600;
+    line-height:1;cursor:pointer;flex:0 0 44px;}
+  .campo .ctl .v{flex:1;text-align:center;font-size:25px;font-weight:800;letter-spacing:-.02em;}
+  .campo .ctl .v.vacio{color:var(--dim);}
+  .campo .ctl .v small{font-size:11.5px;color:var(--dim);font-weight:700;margin-left:2px;}
+
+  .btnHecha{width:100%;margin-top:12px;background:var(--ink);color:var(--cream);border:none;
+    border-radius:13px;padding:18px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;}
+  .btnHecha:disabled{background:var(--line);color:var(--dim);cursor:not-allowed;}
+  .aviso{color:var(--tierra);font-size:13px;font-weight:600;margin:10px 0 0;text-align:center;}
+  .pista{color:var(--dim);font-size:12px;margin:10px 0 0;text-align:center;}
+
+  /* ---------- hojas ---------- */
+  .hoja{position:absolute;left:0;right:0;bottom:0;z-index:50;background:var(--paper);
+    border-top:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px var(--pad) 26px;
+    transform:translateY(101%);transition:transform .26s cubic-bezier(.3,.9,.3,1);
+    max-height:88%;overflow-y:auto;box-shadow:0 -12px 40px rgba(43,43,41,.14);}
+  .hoja.on{transform:translateY(0);}
+  .asa{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 16px;}
+  .foto{position:relative;margin-top:12px;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+    aspect-ratio:3/2;background:var(--sand);}
+  .foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+    animation:alternar 1.9s steps(1,end) infinite;}
+  .foto img.b{animation-delay:.95s;}
+  @keyframes alternar{0%{opacity:1}49.99%{opacity:1}50%{opacity:0}100%{opacity:0}}
+  .foto.quieta img{animation-play-state:paused;}
+  .foto button{position:absolute;right:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);
+    border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 11px;
+    font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+  .claves{margin:0;padding:0 0 0 18px;color:var(--ink2);font-size:14.5px;line-height:1.62;}
+  .claves li{margin-bottom:7px;}
+  .alt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--cream);
+    border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:9px;color:var(--ink);
+    font-family:inherit;cursor:pointer;}
+  .alt img{width:60px;height:44px;object-fit:cover;border-radius:9px;flex:0 0 60px;background:var(--sand);}
+  .alt .nm{flex:1;font-weight:600;font-size:15px;}
+
+  /* ---------- cierre ---------- */
+  .dato{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);}
+  .dato:last-child{border-bottom:none;}
+  .dato .v{font-weight:700;}
+  .escala{display:flex;gap:9px;margin-top:14px;}
+  .escala button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink);
+    border-radius:14px;padding:16px 4px;font-family:inherit;font-weight:700;cursor:pointer;}
+  .escala button b{display:block;font-size:22px;font-weight:800;}
+  .escala button span{font-size:11px;font-weight:500;color:var(--dim);}
+  .escala button[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo2);}
+  .escala button[aria-pressed="true"] span{color:rgba(43,43,41,.7);}
+
+  /* ---------- historial ---------- */
+  .filaHist{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
+    margin-bottom:9px;color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;
+    text-align:left;cursor:pointer;}
+  .barras{display:flex;align-items:flex-end;gap:9px;height:160px;margin-top:22px;}
+  .barras .b{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+    gap:8px;height:100%;}
+  .barras .b i{width:100%;background:var(--amarillo);border-radius:8px 8px 0 0;display:block;}
+  .barras .b.hi i{background:var(--ink);}
+  .barras .b em{font-style:normal;font-size:10.5px;color:var(--dim);}
+  .barras .b s{text-decoration:none;font-size:12px;font-weight:700;}
+  .grande{font-size:26px;font-weight:800;letter-spacing:-.03em;margin-top:4px;}
+
+  .respaldo{display:flex;gap:10px;margin-top:26px;}
+  .respaldo button, .respaldo label{flex:1;background:var(--paper);border:1px solid var(--line);
+    color:var(--ink2);border-radius:12px;padding:13px 8px;font-family:inherit;font-size:13.5px;
+    font-weight:600;cursor:pointer;text-align:center;}
+  .respaldo input{display:none;}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation-play-state:paused!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== HOY ===================== -->
+  <section class="pantalla on" id="hoy">
+    <div class="scroll">
+      <div class="marca">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="AMCE">
+          <rect width="100" height="100" rx="24" fill="#2B2B29"/>
+          <path d="M50 20 L80 82 H60 L50 58 L40 82 H20 Z M50 44 L57 62 H43 Z" fill="#F7E1A0" fill-rule="evenodd"/>
+        </svg>
+        <span class="w">AMCE</span>
+        <span class="sp"></span>
+        <button class="link" data-ver="menuHist">Progreso</button>
+      </div>
+
+      <span class="eyebrow" id="fecha"></span>
+      <h1>Hola, Emi</h1>
+      <div class="chip"><span id="diaNum"></span></div>
+
+      <div class="tarjeta">
+        <div class="split">
+          <div>
+            <span class="eyebrow">Lo de hoy</span>
+            <h2 style="margin-top:3px" id="diaTitulo"></h2>
+          </div>
+          <span class="muted">7 ejercicios</span>
+        </div>
+        <ul class="lista" id="listaHoy"></ul>
+      </div>
+
+      <p class="muted" style="margin:22px 0 0">Tus últimas sesiones</p>
+      <div class="racha" id="racha"></div>
+    </div>
+    <div class="pie"><button class="cta" id="btnEmpezar">Empezar</button></div>
+  </section>
+
+  <!-- ===================== EJERCICIO ===================== -->
+  <section class="pantalla" id="ejercicio">
+    <div class="barraSup">
+      <button class="link" id="btnAtras">← Atrás</button>
+      <span class="eyebrow" id="contador"></span>
+    </div>
+    <div class="barra" id="barra"></div>
+
+    <div class="scroll" style="padding-top:0">
+      <div style="padding-top:16px">
+        <span class="eyebrow" id="slot"></span>
+        <div class="nombreEj" id="nombreEj"></div>
+      </div>
+
+      <div class="acciones">
+        <button data-hoja="claves" class="prim">Ver cómo se hace</button>
+        <button data-hoja="cambiar">No está disponible</button>
+      </div>
+
+      <div class="cardio" id="cajaCardio" style="display:none">
+        <span class="eyebrow">Duración</span>
+        <div class="n" id="minutos">3 MIN</div>
+        <p class="muted" style="margin:8px 0 0">Suave. Tenés que poder hablar mientras lo hacés.</p>
+      </div>
+
+      <div class="series" id="cajaSeries">
+        <div class="cabLista">
+          <span class="eyebrow">Series</span>
+          <span class="muted" id="contadorSeries"></span>
+        </div>
+        <p class="objetivo" id="objetivo"></p>
+        <div id="listaSeries"></div>
+      </div>
+    </div>
+
+    <div class="pie"><button class="cta" id="btnSiguiente">Siguiente</button></div>
+
+    <div class="hoja" id="hoja-claves">
+      <div class="asa"></div>
+      <h2 id="tituloClaves"></h2>
+      <div class="foto" id="caraFoto">
+        <img id="foto0" alt=""><img id="foto1" class="b" alt="">
+        <button id="pausaFoto">Pausar</button>
+      </div>
+      <p class="muted" style="margin:16px 0 12px">Tres cosas para revisar mientras lo hacés.</p>
+      <ul class="claves" id="listaClaves"></ul>
+      <button class="cta suave" data-cerrar style="margin-top:20px">Entendido</button>
+    </div>
+
+    <div class="hoja" id="hoja-cambiar">
+      <div class="asa"></div>
+      <h2>Cambiar por otro</h2>
+      <p class="muted" style="margin:6px 0 16px">Mismo lugar en la rutina, mismo grupo.</p>
+      <div id="listaAlts"></div>
+      <button class="cta suave" data-cerrar style="margin-top:10px">Cancelar</button>
+    </div>
+  </section>
+
+  <!-- ===================== CIERRE ===================== -->
+  <section class="pantalla" id="cierre">
+    <div class="barraSup">
+      <span class="eyebrow">Fin de la sesión</span>
+    </div>
+    <div class="scroll">
+      <span class="eyebrow">Terminaste</span>
+      <h1 id="tituloCierre"></h1>
+
+      <div class="tarjeta">
+        <div class="dato"><span class="muted">Series completadas</span><span class="v" id="resumenSeries"></span></div>
+        <div class="dato"><span class="muted">Subiste el peso en</span><span class="v" id="resumenSubio"></span></div>
+      </div>
+
+      <p class="eyebrow" style="display:block;margin:28px 0 0">¿Cómo anda la zona lumbar?</p>
+      <div class="escala" id="escala">
+        <button data-v="0" aria-pressed="true"><b>0</b><span>Bien</span></button>
+        <button data-v="1" aria-pressed="false"><b>1</b><span>Algo</span></button>
+        <button data-v="2" aria-pressed="false"><b>2</b><span>Molesta</span></button>
+        <button data-v="3" aria-pressed="false"><b>3</b><span>Duele</span></button>
+      </div>
+      <p class="muted" style="margin-top:12px;font-size:13.5px">
+        Se guarda con la fecha. Sirve para mostrarle a un profesional qué pasó y cuándo.</p>
+    </div>
+    <div class="pie"><button class="cta" id="btnGuardar">Guardar y cerrar</button></div>
+  </section>
+
+  <!-- ===================== PROGRESO ===================== -->
+  <section class="pantalla" id="menuHist">
+    <div class="barraSup">
+      <button class="link" data-ver="hoy">← Inicio</button>
+      <span class="eyebrow">Progreso</span>
+    </div>
+    <div class="scroll">
+      <h1>Tu progreso</h1>
+      <p class="muted" style="margin:8px 0 20px">Elegí un ejercicio para ver cómo cambió el peso.</p>
+      <div id="listaHistorial"></div>
+
+      <div class="respaldo">
+        <button id="btnExportar">Descargar copia</button>
+        <label for="archivoImportar">Restaurar copia<input type="file" id="archivoImportar" accept="application/json"></label>
+      </div>
+      <p class="muted" style="margin-top:12px;font-size:12.5px">
+        Los datos viven en este navegador. Si cambiás de teléfono o borrás los datos de navegación,
+        se pierden. Descargá una copia de vez en cuando.</p>
+    </div>
+  </section>
+
+  <section class="pantalla" id="historial">
+    <div class="barraSup">
+      <button class="link" data-ver="menuHist">← Progreso</button>
+      <span class="eyebrow">Historial</span>
+    </div>
+    <div class="scroll">
+      <span class="eyebrow" id="histSlot"></span>
+      <h1 id="histNombre"></h1>
+      <div id="histCuerpo"></div>
+    </div>
+    <div class="pie"><button class="cta suave" data-ver="menuHist">Volver</button></div>
+  </section>
+
+</div>
+
+<script src="datos.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
