@@ -8,19 +8,6 @@
 
 const BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
-/* ------------------------------------------------------------
-   CÓDIGOS DE ACCESO
-   Se guardan cifrados para que no se lean a simple vista.
-   OJO: esto frena a un curioso, no es seguridad de verdad.
-   Cualquiera con conocimientos puede saltearlo.
-
-   El código de prueba es 123456. Para cambiarlo, pedime que
-   genere el cifrado del número que quieras y reemplazá la lista.
-   ------------------------------------------------------------ */
-const CODIGOS = [
-  '7dd1705a-dfbb4963'   // 123456  ← reemplazar
-];
-
 /* Cada ejercicio:
    id      identificador y carpeta de la foto
    nombre  como lo ve Emilia
