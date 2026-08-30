@@ -56,26 +56,40 @@ const BASE_IMG = './img/';
 
 ## Estructura de la rutina
 
-**Cuatro semanas, tres jornadas cada una: doce sesiones en total.** Cada semana cambia
-los grupos musculares y los ejercicios, pero todas cubren el cuerpo entero — siempre hay
-una jornada de piernas, una de empuje y una de tracción. Si una semana se quedara sin
-piernas, serían catorce días sin entrenarlas.
+**Tres días, tres rutinas para elegir en cada uno: nueve rutinas en total.**
+Cada día trabaja una región del cuerpo y las tres opciones cambian el énfasis
+y los ejercicios.
 
-La app propone la semana y la jornada que siguen, y Emilia puede elegir cualquier otra
-desde la pantalla de inicio. La semana avanza cada tres sesiones y vuelve a la 1 después
-de la cuarta.
+| Día | Región | Opciones |
+|---|---|---|
+| 1 | Empuje | Pecho y hombro · Hombro y tríceps · Pecho y tríceps |
+| 2 | Tracción | Espalda y bíceps · Espalda y antebrazo · Espalda completa |
+| 3 | Piernas | Cuádriceps y glúteo · Isquios y glúteo medio · Glúteo y gemelo |
 
-Cada jornada tiene siempre la misma forma:
+La app propone el día siguiente al último que hizo, y dentro de ese día la rutina
+que hace más tiempo que no hace. Emilia puede elegir cualquier otra. Con nueve
+rutinas distintas, no repite ninguna en tres semanas.
+
+Toda rutina tiene siempre la misma forma:
 
 1. Cardio suave, 3 minutos
 2. Un ejercicio de zona media
 3. Cinco ejercicios musculares, 3 series de 10 repeticiones
 
-El peso lo decide Emilia en cada serie. La app **nunca sugiere cuánto levantar**: sólo muestra
-con cuánto lo hizo la vez anterior, como referencia.
+El peso lo decide Emilia en cada serie. La app **nunca sugiere cuánto levantar**: sólo
+muestra con cuánto lo hizo la vez anterior, como referencia.
 
 Cada serie guarda su propio peso y sus propias repeticiones. No se puede dar una serie por
 hecha sin cargar repeticiones, ni sin cargar peso cuando el ejercicio lleva carga.
+
+## Acceso
+
+Por ahora la app **entra directo**, sin pedir nada. Hubo una versión con Face ID que se
+sacó mientras se prueba, para poder abrirla desde varios teléfonos sin fricción.
+
+Para reactivarlo hay que reponer la pantalla de acceso en `index.html` y el bloque de
+credenciales en `app.js`. Usaba WebAuthn: `navigator.credentials.create` la primera vez
+para registrar la cara, y `navigator.credentials.get` después. Requiere HTTPS.
 
 ## Pendientes
 

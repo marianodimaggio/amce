@@ -96,23 +96,18 @@
     border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
     font-size:14px;font-weight:800;}
   .jornada[aria-pressed="true"] .num{background:var(--amarillo);border-color:var(--amarillo);}
-  .jornada.hecha .num{background:var(--amarillo2);border-color:var(--amarillo2);}
   .jornada .cuerpo{flex:1;min-width:0;}
   .jornada .tit{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
   .jornada .gs{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
   .jornada .gs span{font-size:11px;font-weight:600;color:var(--ink2);background:var(--cream);
     border:1px solid var(--line);border-radius:6px;padding:2px 7px;}
-  .jornada .marcaHecha{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--dim);flex:0 0 auto;padding-top:8px;}
+  .jornada .cuando{display:block;font-size:11.5px;color:var(--dim);margin-top:7px;}
 
   /* ---------- aviso sin conexión ---------- */
   #sinRed{position:absolute;left:0;right:0;top:0;z-index:70;background:var(--ink);
     color:var(--cream);font-size:12.5px;font-weight:600;text-align:center;
     padding:calc(7px + env(safe-area-inset-top)) 12px 7px;}
 
-  /* ---------- acceso ---------- */
-  .errorCodigo{text-align:center;color:var(--tierra);font-size:13.5px;font-weight:600;
-    margin:14px 0 0;min-height:20px;}
 
   .marca{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
   .marca img{width:28px;height:28px;border-radius:8px;display:block;}
@@ -272,20 +267,6 @@
     <div class="pie"><button class="cta" id="btnEntrar">Entrar</button></div>
   </section>
 
-  <!-- ===================== ACCESO ===================== -->
-  <section class="pantalla" id="acceso">
-    <div class="barraSup">
-      <button class="link" data-ver="portada">← Volver</button>
-    </div>
-    <div class="scroll" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
-      <h1 id="tituloAcceso">Hola, Emi</h1>
-      <p class="muted" style="margin:8px auto 0;max-width:280px" id="bajadaAcceso">Mirá la pantalla para entrar.</p>
-      <p class="errorCodigo" id="errorAcceso" style="margin-top:22px"></p>
-      <button class="cta" id="btnCara" style="margin-top:8px">Entrar con Face ID</button>
-    </div>
-  </section>
-
-
   <!-- ===================== HOY ===================== -->
   <section class="pantalla" id="hoy">
     <div class="scroll">
@@ -299,8 +280,9 @@
       <span class="eyebrow" id="fecha"></span>
       <h1>Hola, Emi</h1>
 
-      <div class="semanas" id="semanas"></div>
-      <div id="jornadas"></div>
+      <div class="semanas" id="dias"></div>
+      <p class="muted" id="regionDia" style="margin:14px 0 0;font-size:13.5px"></p>
+      <div id="opciones"></div>
 
       <div class="tarjeta" id="tarjetaEj">
         <div class="split">

@@ -49,23 +49,43 @@ function fechaLarga() {
   return dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
 }
 
-/* La semana avanza cada tres sesiones completadas y vuelve a la 1
-   después de la cuarta. Es solo una propuesta: Emilia puede elegir
-   cualquier semana y cualquier jornada. */
-function semanaSugerida() {
-  return Math.floor(datos.sesiones.length / 3) % SEMANAS.length;
+/* Qué día propone la app: el siguiente al último que hizo. */
+function diaSugerido() {
+  const ult = datos.sesiones[datos.sesiones.length - 1];
+  if (!ult) return 0;
+  const idx = DIAS.findIndex(d => d.n === ult.dia);
+  return idx === -1 ? 0 : (idx + 1) % DIAS.length;
 }
 
-/* La jornada que sigue dentro de esa semana. */
-function jornadaSugerida() {
-  return datos.sesiones.length % 3;
+/* Qué opción propone: la que hace más tiempo que no hace.
+   Así la variedad sale sola, sin que ella tenga que acordarse. */
+function opcionSugerida(iDia) {
+  const ops = DIAS[iDia].opciones;
+  let elegida = 0, masVieja = Infinity;
+  ops.forEach((o, k) => {
+    let ultima = -1;
+    datos.sesiones.forEach((s, n) => { if (s.opcion === o.id) ultima = n; });
+    if (ultima < masVieja) { masVieja = ultima; elegida = k; }
+  });
+  return elegida;
 }
 
-/* Jornadas ya hechas de una semana, para marcarlas en la pantalla. */
-function jornadasHechas(nSemana) {
-  const hechas = new Set();
-  datos.sesiones.forEach(s => { if (s.semana === nSemana) hechas.add(s.jornada); });
-  return hechas;
+/* Cuándo hizo cada opción por última vez, para mostrarlo. */
+function ultimaVez(idOpcion) {
+  for (let i = datos.sesiones.length - 1; i >= 0; i--) {
+    if (datos.sesiones[i].opcion === idOpcion) return datos.sesiones[i].fecha;
+  }
+  return null;
+}
+
+function haceCuanto(fechaISO) {
+  if (!fechaISO) return 'nunca la hiciste';
+  const dias = Math.round((new Date(hoyISO()) - new Date(fechaISO)) / 86400000);
+  if (dias <= 0) return 'hoy';
+  if (dias === 1) return 'ayer';
+  if (dias < 7) return 'hace ' + dias + ' días';
+  const sem = Math.floor(dias / 7);
+  return 'hace ' + sem + (sem === 1 ? ' semana' : ' semanas');
 }
 
 /* Último peso usado en un ejercicio, mirando todas las sesiones. */
@@ -94,8 +114,8 @@ function historial(idEjercicio) {
 
 /* ---------- estado de la sesión en curso ---------- */
 
-let jornada = null;  // jornada que se está haciendo
-let nSemana = null;  // número de semana de esa jornada
+let rutina = null;   // rutina que se está haciendo
+let nDia = null;     // número de día de esa rutina
 let plan = [];       // ejercicios de la sesión, ya resueltos contra el catálogo
 let i = 0;           // ejercicio actual
 
@@ -134,37 +154,34 @@ function ver(id) {
    PANTALLA: HOY
    ============================================================ */
 
-let semanaVista = 0;      // índice de la semana que se está mirando
-let jornadaElegida = 0;   // índice de la jornada seleccionada
+let diaVisto = 0;         // índice del día que se está mirando
+let opcionElegida = 0;    // índice de la rutina seleccionada
 
-function pintarSemanas() {
-  $('#semanas').innerHTML = SEMANAS.map((s, k) =>
-    '<button data-semana="' + k + '" aria-pressed="' + (k === semanaVista) + '">' +
-      '<span class="s">Semana</span>' + s.n +
+function pintarDias() {
+  $('#dias').innerHTML = DIAS.map((d, k) =>
+    '<button data-dia="' + k + '" aria-pressed="' + (k === diaVisto) + '">' +
+      '<span class="s">Día</span>' + d.n +
+    '</button>').join('');
+  $('#regionDia').textContent = DIAS[diaVisto].region + ' · ' + DIAS[diaVisto].resumen;
+}
+
+function pintarOpciones() {
+  const ops = DIAS[diaVisto].opciones;
+  $('#opciones').innerHTML = ops.map((o, k) =>
+    '<button class="jornada" data-opcion="' + k + '" aria-pressed="' + (k === opcionElegida) + '">' +
+      '<span class="num">' + (k + 1) + '</span>' +
+      '<span class="cuerpo">' +
+        '<span class="tit">' + o.titulo + '</span>' +
+        '<span class="gs">' + o.grupos.map(g => '<span>' + g + '</span>').join('') + '</span>' +
+        '<span class="cuando">' + haceCuanto(ultimaVez(o.id)) + '</span>' +
+      '</span>' +
     '</button>').join('');
 }
 
-function pintarJornadas() {
-  const semana = SEMANAS[semanaVista];
-  const hechas = jornadasHechas(semana.n);
-  $('#jornadas').innerHTML = semana.jornadas.map((j, k) => {
-    const hecha = hechas.has(j.n);
-    return '<button class="jornada' + (hecha ? ' hecha' : '') + '" data-jornada="' + k + '" ' +
-      'aria-pressed="' + (k === jornadaElegida) + '">' +
-      '<span class="num">' + j.n + '</span>' +
-      '<span class="cuerpo">' +
-        '<span class="tit">' + j.titulo + '</span>' +
-        '<span class="gs">' + j.grupos.map(g => '<span>' + g + '</span>').join('') + '</span>' +
-      '</span>' +
-      (hecha ? '<span class="marcaHecha">hecha</span>' : '') +
-      '</button>';
-  }).join('');
-}
-
 function pintarListaEjercicios() {
-  const j = SEMANAS[semanaVista].jornadas[jornadaElegida];
-  $('#diaTitulo').textContent = j.titulo;
-  $('#listaHoy').innerHTML = j.ejercicios.map((item, k) => {
+  const o = DIAS[diaVisto].opciones[opcionElegida];
+  $('#diaTitulo').textContent = o.titulo;
+  $('#listaHoy').innerHTML = o.ejercicios.map((item, k) => {
     const cat = CATALOGO[item.id];
     const meta = item.minutos ? item.minutos + ' min'
       : (cat.tiempo ? item.series + ' × ' + item.reps + '″' : item.series + ' × ' + item.reps);
@@ -186,29 +203,29 @@ function pintarRacha() {
 
 function pintarHoy() {
   $('#fecha').textContent = fechaLarga();
-  semanaVista = semanaSugerida();
-  jornadaElegida = jornadaSugerida();
-  pintarSemanas();
-  pintarJornadas();
+  diaVisto = diaSugerido();
+  opcionElegida = opcionSugerida(diaVisto);
+  pintarDias();
+  pintarOpciones();
   pintarListaEjercicios();
   pintarRacha();
 }
 
-$('#semanas').addEventListener('click', ev => {
-  const b = ev.target.closest('[data-semana]');
+$('#dias').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-dia]');
   if (!b) return;
-  semanaVista = +b.dataset.semana;
-  jornadaElegida = 0;
-  pintarSemanas();
-  pintarJornadas();
+  diaVisto = +b.dataset.dia;
+  opcionElegida = opcionSugerida(diaVisto);
+  pintarDias();
+  pintarOpciones();
   pintarListaEjercicios();
 });
 
-$('#jornadas').addEventListener('click', ev => {
-  const b = ev.target.closest('[data-jornada]');
+$('#opciones').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-opcion]');
   if (!b) return;
-  jornadaElegida = +b.dataset.jornada;
-  pintarJornadas();
+  opcionElegida = +b.dataset.opcion;
+  pintarOpciones();
   pintarListaEjercicios();
   $('#tarjetaEj').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
@@ -430,8 +447,8 @@ function pintarCierre() {
   });
   $('#resumenSubio').textContent = subio === 0 ? 'Ninguno' :
     subio + (subio === 1 ? ' ejercicio' : ' ejercicios');
-  $('#tituloCierre').textContent = jornada.titulo;
-  $('#subCierre').textContent = 'Semana ' + nSemana + ' · jornada ' + jornada.n;
+  $('#tituloCierre').textContent = rutina.titulo;
+  $('#subCierre').textContent = 'Día ' + nDia + ' · ' + DIAS[nDia - 1].region;
 }
 
 $('#escala').addEventListener('click', ev => {
@@ -444,9 +461,9 @@ $('#btnGuardar').addEventListener('click', () => {
   const lumbar = $('#escala button[aria-pressed="true"]');
   const sesion = {
     fecha: hoyISO(),
-    semana: nSemana,
-    jornada: jornada.n,
-    titulo: jornada.titulo,
+    dia: nDia,
+    opcion: rutina.id,
+    titulo: rutina.titulo,
     lumbar: lumbar ? +lumbar.dataset.v : null,
     ejercicios: plan.filter(e => e.series).map(e => ({
       id: e.id,
@@ -553,10 +570,9 @@ $('#archivoImportar').addEventListener('change', ev => {
    ============================================================ */
 
 $('#btnEmpezar').addEventListener('click', () => {
-  const semana = SEMANAS[semanaVista];
-  nSemana = semana.n;
-  jornada = semana.jornadas[jornadaElegida];
-  plan = armarPlan(jornada);
+  nDia = DIAS[diaVisto].n;
+  rutina = DIAS[diaVisto].opciones[opcionElegida];
+  plan = armarPlan(rutina);
   i = 0;
   ver('ejercicio');
   pintarEjercicio();
@@ -568,56 +584,13 @@ $$('[data-ver]').forEach(b => b.addEventListener('click', () => {
 }));
 
 /* ============================================================
-   ACCESO CON FACE ID
-   Usa el mismo mecanismo que las claves de acceso de iPhone.
-   La primera vez registra la cara; después alcanza con mirar.
+   ACCESO
+   Por ahora la portada entra directo, sin pedir nada.
 
-   No hay servidor que valide la firma, así que esto frena a un
-   curioso, no es seguridad de verdad.
+   Para volver a activar Face ID más adelante hay que reponer
+   la pantalla de acceso y el bloque de credenciales. Está
+   documentado en el README.
    ============================================================ */
-
-const CLAVE_CARA = 'amce.cara';
-
-const b64 = {
-  guardar: buf => btoa(String.fromCharCode.apply(null, new Uint8Array(buf))),
-  leer: txt => Uint8Array.from(atob(txt), c => c.charCodeAt(0))
-};
-
-function credencial() {
-  try { return localStorage.getItem(CLAVE_CARA); } catch (e) { return null; }
-}
-
-async function caraDisponible() {
-  if (!window.PublicKeyCredential || !window.isSecureContext) return false;
-  try { return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }
-  catch (e) { return false; }
-}
-
-async function registrarCara() {
-  const cred = await navigator.credentials.create({
-    publicKey: {
-      challenge: crypto.getRandomValues(new Uint8Array(32)),
-      rp: { name: 'AMCE' },
-      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'emi', displayName: 'Emi' },
-      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
-      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
-      attestation: 'none',
-      timeout: 60000
-    }
-  });
-  localStorage.setItem(CLAVE_CARA, b64.guardar(cred.rawId));
-}
-
-async function pedirCara() {
-  await navigator.credentials.get({
-    publicKey: {
-      challenge: crypto.getRandomValues(new Uint8Array(32)),
-      allowCredentials: [{ type: 'public-key', id: b64.leer(credencial()) }],
-      userVerification: 'required',
-      timeout: 60000
-    }
-  });
-}
 
 function entrarALaApp() {
   pintarHoy();
@@ -625,39 +598,7 @@ function entrarALaApp() {
   ver('hoy');
 }
 
-/* Registrar si es la primera vez, verificar si ya está registrada. */
-async function intentarCara() {
-  const primeraVez = !credencial();
-  $('#errorAcceso').textContent = '';
-  $('#btnCara').disabled = true;
-  try {
-    if (primeraVez) await registrarCara();
-    else await pedirCara();
-    entrarALaApp();
-  } catch (e) {
-    $('#errorAcceso').textContent = primeraVez
-      ? 'No se pudo activar Face ID. Probá de nuevo.'
-      : 'No te reconoció. Probá de nuevo.';
-    $('#btnCara').textContent = 'Reintentar';
-  } finally {
-    $('#btnCara').disabled = false;
-  }
-}
-
-async function abrirAcceso() {
-  // en dispositivos sin Face ID (una computadora, por ejemplo) se entra directo
-  if (!await caraDisponible()) { entrarALaApp(); return; }
-
-  const primeraVez = !credencial();
-  $('#tituloAcceso').textContent = primeraVez ? 'Activá Face ID' : 'Hola, Emi';
-  $('#bajadaAcceso').textContent = primeraVez
-    ? 'Una sola vez. Después entrás mirando la pantalla.'
-    : 'Mirá la pantalla para entrar.';
-  $('#btnCara').textContent = primeraVez ? 'Activar Face ID' : 'Entrar con Face ID';
-  $('#errorAcceso').textContent = '';
-  ver('acceso');
-  intentarCara();
-}
+$('#btnEntrar').addEventListener('click', entrarALaApp);
 
 /* ============================================================
    FUNCIONAMIENTO SIN CONEXIÓN
@@ -683,6 +624,3 @@ function avisarConexion() {
 window.addEventListener('online', avisarConexion);
 window.addEventListener('offline', avisarConexion);
 avisarConexion();
-
-$('#btnCara').addEventListener('click', intentarCara);
-$('#btnEntrar').addEventListener('click', abrirAcceso);

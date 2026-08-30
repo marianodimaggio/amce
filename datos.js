@@ -181,137 +181,105 @@ const CATALOGO = {
 };
 
 /* ============================================================
-   LAS CUATRO SEMANAS
+   LOS TRES DÍAS
    ------------------------------------------------------------
-   Cada semana tiene tres jornadas y cambia los grupos musculares
-   y los ejercicios. Pero cada semana cubre igual todo el cuerpo:
-   siempre hay un día de piernas, uno de empuje y uno de tracción.
-   Si una semana se quedara sin piernas, Emilia pasaría catorce
-   días sin entrenarlas.
+   Emilia va tres veces por semana. Cada día trabaja una región
+   del cuerpo y tiene tres rutinas para elegir, que cambian el
+   énfasis y los ejercicios.
 
-   Estructura fija de cada jornada:
+   Estructura fija de toda rutina:
    cardio → zona media → cinco musculares de 3 × 10.
    El peso lo decide ella en cada serie.
    ============================================================ */
 
-const SEMANAS = [
-  { n:1, jornadas:[
-    { n:1, titulo:'Pecho y hombro', grupos:['Pecho','Hombro','Tríceps'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
-      { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
-      { id:'Dumbbell_Shoulder_Press', series:3, reps:10, alts:['Arnold_Dumbbell_Press'] },
-      { id:'Side_Lateral_Raise', series:3, reps:10, alts:['Face_Pull'] },
-      { id:'Lying_Triceps_Press', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] },
-      { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] }
-    ]},
-    { n:2, titulo:'Espalda y bíceps', grupos:['Espalda','Bíceps','Hombro posterior'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
-      { id:'Wide-Grip_Lat_Pulldown', series:3, reps:10, alts:['One_Arm_Lat_Pulldown'] },
-      { id:'Seated_Cable_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row'] },
-      { id:'Reverse_Grip_Bent-Over_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row','Seated_Cable_Rows'] },
-      { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
-      { id:'Alternate_Hammer_Curl', series:3, reps:10, alts:['Hammer_Curls','Machine_Bicep_Curl'] }
-    ]},
-    { n:3, titulo:'Cuádriceps y glúteo', grupos:['Cuádriceps','Glúteo','Isquios','Gemelo'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
-      { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge'] },
-      { id:'Leg_Press', series:3, reps:10, alts:['Leg_Extensions','Bodyweight_Squat'] },
-      { id:'Step-up_with_Knee_Raise', series:3, reps:10, alts:['Dumbbell_Lunges','Dumbbell_Rear_Lunge'] },
-      { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Leg_Extensions'] },
-      { id:'Seated_Calf_Raise', series:3, reps:10, alts:['Thigh_Abductor'] }
-    ]}
+const DIAS = [
+  { n:1, region:'Empuje', resumen:'Pecho, hombro y tríceps', opciones:[
+    { id:'pecho-y-hombro', titulo:'Pecho y hombro', grupos:['Pecho','Hombro','Tríceps'], ejercicios:[
+        { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
+        { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
+        { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
+        { id:'Dumbbell_Shoulder_Press', series:3, reps:10, alts:['Arnold_Dumbbell_Press'] },
+        { id:'Side_Lateral_Raise', series:3, reps:10, alts:['Face_Pull'] },
+        { id:'Lying_Triceps_Press', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] },
+        { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] }
+      ]},
+    { id:'hombro-y-triceps', titulo:'Hombro y tríceps', grupos:['Hombro','Tríceps','Pecho'], ejercicios:[
+        { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
+        { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Crunches'] },
+        { id:'Dumbbell_Shoulder_Press', series:3, reps:10, alts:['Arnold_Dumbbell_Press'] },
+        { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
+        { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
+        { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
+        { id:'Cable_Rope_Overhead_Triceps_Extension', series:3, reps:10, alts:['Triceps_Pushdown','Lying_Triceps_Press'] }
+      ]},
+    { id:'pecho-y-triceps', titulo:'Pecho y tríceps', grupos:['Pecho','Tríceps','Hombro'], ejercicios:[
+        { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
+        { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
+        { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
+        { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
+        { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
+        { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] },
+        { id:'Cable_Rope_Overhead_Triceps_Extension', series:3, reps:10, alts:['Lying_Triceps_Press'] }
+      ]}
   ]},
 
-  { n:2, jornadas:[
-    { n:1, titulo:'Hombro y tríceps', grupos:['Hombro','Tríceps','Pecho'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Crunches'] },
-      { id:'Dumbbell_Shoulder_Press', series:3, reps:10, alts:['Arnold_Dumbbell_Press'] },
-      { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
-      { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
-      { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
-      { id:'Cable_Rope_Overhead_Triceps_Extension', series:3, reps:10, alts:['Triceps_Pushdown','Lying_Triceps_Press'] }
-    ]},
-    { n:2, titulo:'Espalda y antebrazo', grupos:['Espalda','Bíceps','Antebrazo'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
-      { id:'One_Arm_Lat_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
-      { id:'Bent_Over_Two-Dumbbell_Row', series:3, reps:10, alts:['Seated_Cable_Rows'] },
-      { id:'Rope_Straight-Arm_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
-      { id:'Hammer_Curls', series:3, reps:10, alts:['Alternate_Hammer_Curl','Machine_Bicep_Curl'] },
-      { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls'] }
-    ]},
-    { n:3, titulo:'Isquios y glúteo medio', grupos:['Isquios','Glúteo medio','Cuádriceps'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Air_Bike', series:3, reps:15, alts:['Crunches','Plank'] },
-      { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Leg_Extensions'] },
-      { id:'Butt_Lift_Bridge', series:3, reps:12, alts:['Barbell_Hip_Thrust'] },
-      { id:'Thigh_Abductor', series:3, reps:10, alts:['Thigh_Adductor'] },
-      { id:'Thigh_Adductor', series:3, reps:10, alts:['Thigh_Abductor'] },
-      { id:'Dumbbell_Lunges', series:3, reps:10, alts:['Dumbbell_Rear_Lunge','Step-up_with_Knee_Raise'] }
-    ]}
+  { n:2, region:'Tracción', resumen:'Espalda, bíceps y antebrazo', opciones:[
+    { id:'espalda-y-biceps', titulo:'Espalda y bíceps', grupos:['Espalda','Bíceps','Hombro posterior'], ejercicios:[
+        { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
+        { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
+        { id:'Wide-Grip_Lat_Pulldown', series:3, reps:10, alts:['One_Arm_Lat_Pulldown'] },
+        { id:'Seated_Cable_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row'] },
+        { id:'Reverse_Grip_Bent-Over_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row','Seated_Cable_Rows'] },
+        { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
+        { id:'Alternate_Hammer_Curl', series:3, reps:10, alts:['Hammer_Curls','Machine_Bicep_Curl'] }
+      ]},
+    { id:'espalda-y-antebrazo', titulo:'Espalda y antebrazo', grupos:['Espalda','Bíceps','Antebrazo'], ejercicios:[
+        { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
+        { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
+        { id:'One_Arm_Lat_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
+        { id:'Bent_Over_Two-Dumbbell_Row', series:3, reps:10, alts:['Seated_Cable_Rows'] },
+        { id:'Rope_Straight-Arm_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
+        { id:'Hammer_Curls', series:3, reps:10, alts:['Alternate_Hammer_Curl','Machine_Bicep_Curl'] },
+        { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls'] }
+      ]},
+    { id:'espalda-completa', titulo:'Espalda completa', grupos:['Espalda','Bíceps','Antebrazo'], ejercicios:[
+        { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
+        { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Crunches'] },
+        { id:'Rope_Straight-Arm_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
+        { id:'Reverse_Grip_Bent-Over_Rows', series:3, reps:10, alts:['Seated_Cable_Rows','Bent_Over_Two-Dumbbell_Row'] },
+        { id:'One_Arm_Lat_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
+        { id:'Hammer_Curls', series:3, reps:10, alts:['Alternate_Hammer_Curl'] },
+        { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls'] }
+      ]}
   ]},
 
-  { n:3, jornadas:[
-    { n:1, titulo:'Pecho y tríceps', grupos:['Pecho','Tríceps','Hombro'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
-      { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
-      { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
-      { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
-      { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] },
-      { id:'Cable_Rope_Overhead_Triceps_Extension', series:3, reps:10, alts:['Lying_Triceps_Press'] }
-    ]},
-    { n:2, titulo:'Espalda alta y bíceps', grupos:['Espalda alta','Bíceps','Hombro posterior'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
-      { id:'Seated_Cable_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row'] },
-      { id:'Wide-Grip_Lat_Pulldown', series:3, reps:10, alts:['One_Arm_Lat_Pulldown'] },
-      { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
-      { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls'] },
-      { id:'Alternate_Hammer_Curl', series:3, reps:10, alts:['Hammer_Curls'] }
-    ]},
-    { n:3, titulo:'Glúteo y gemelo', grupos:['Glúteo','Gemelo','Cuádriceps'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
-      { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge'] },
-      { id:'Dumbbell_Rear_Lunge', series:3, reps:10, alts:['Dumbbell_Lunges','Step-up_with_Knee_Raise'] },
-      { id:'Thigh_Abductor', series:3, reps:10, alts:['Thigh_Adductor'] },
-      { id:'Leg_Extensions', series:3, reps:10, alts:['Leg_Press','Bodyweight_Squat'] },
-      { id:'Seated_Calf_Raise', series:3, reps:10, alts:['Thigh_Adductor'] }
-    ]}
-  ]},
-
-  { n:4, jornadas:[
-    { n:1, titulo:'Hombro y pecho', grupos:['Hombro','Pecho','Tríceps'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Air_Bike', series:3, reps:15, alts:['Crunches','Plank'] },
-      { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
-      { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
-      { id:'Side_Lateral_Raise', series:3, reps:10, alts:['Face_Pull'] },
-      { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
-      { id:'Lying_Triceps_Press', series:3, reps:10, alts:['Triceps_Pushdown'] }
-    ]},
-    { n:2, titulo:'Espalda completa', grupos:['Espalda','Bíceps','Antebrazo'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Crunches'] },
-      { id:'Rope_Straight-Arm_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
-      { id:'Reverse_Grip_Bent-Over_Rows', series:3, reps:10, alts:['Seated_Cable_Rows','Bent_Over_Two-Dumbbell_Row'] },
-      { id:'One_Arm_Lat_Pulldown', series:3, reps:10, alts:['Wide-Grip_Lat_Pulldown'] },
-      { id:'Hammer_Curls', series:3, reps:10, alts:['Alternate_Hammer_Curl'] },
-      { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls'] }
-    ]},
-    { n:3, titulo:'Piernas completo', grupos:['Cuádriceps','Glúteo','Isquios','Gemelo'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Air_Bike'] },
-      { id:'Bodyweight_Squat', series:3, reps:15, alts:['Leg_Press','Leg_Extensions'] },
-      { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge'] },
-      { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Leg_Extensions'] },
-      { id:'Step-up_with_Knee_Raise', series:3, reps:10, alts:['Dumbbell_Lunges'] },
-      { id:'Thigh_Adductor', series:3, reps:10, alts:['Thigh_Abductor'] }
-    ]}
+  { n:3, region:'Piernas', resumen:'Cuádriceps, glúteo, isquios y gemelo', opciones:[
+    { id:'cuadriceps-y-gluteo', titulo:'Cuádriceps y glúteo', grupos:['Cuádriceps','Glúteo','Isquios','Gemelo'], ejercicios:[
+        { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
+        { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
+        { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge'] },
+        { id:'Leg_Press', series:3, reps:10, alts:['Leg_Extensions','Bodyweight_Squat'] },
+        { id:'Step-up_with_Knee_Raise', series:3, reps:10, alts:['Dumbbell_Lunges','Dumbbell_Rear_Lunge'] },
+        { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Leg_Extensions'] },
+        { id:'Seated_Calf_Raise', series:3, reps:10, alts:['Thigh_Abductor'] }
+      ]},
+    { id:'isquios-y-gluteo-medio', titulo:'Isquios y glúteo medio', grupos:['Isquios','Glúteo medio','Cuádriceps'], ejercicios:[
+        { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
+        { id:'Air_Bike', series:3, reps:15, alts:['Crunches','Plank'] },
+        { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Leg_Extensions'] },
+        { id:'Butt_Lift_Bridge', series:3, reps:12, alts:['Barbell_Hip_Thrust'] },
+        { id:'Thigh_Abductor', series:3, reps:10, alts:['Thigh_Adductor'] },
+        { id:'Thigh_Adductor', series:3, reps:10, alts:['Thigh_Abductor'] },
+        { id:'Dumbbell_Lunges', series:3, reps:10, alts:['Dumbbell_Rear_Lunge','Step-up_with_Knee_Raise'] }
+      ]},
+    { id:'gluteo-y-gemelo', titulo:'Glúteo y gemelo', grupos:['Glúteo','Gemelo','Cuádriceps'], ejercicios:[
+        { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
+        { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
+        { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge'] },
+        { id:'Dumbbell_Rear_Lunge', series:3, reps:10, alts:['Dumbbell_Lunges','Step-up_with_Knee_Raise'] },
+        { id:'Thigh_Abductor', series:3, reps:10, alts:['Thigh_Adductor'] },
+        { id:'Leg_Extensions', series:3, reps:10, alts:['Leg_Press','Bodyweight_Squat'] },
+        { id:'Seated_Calf_Raise', series:3, reps:10, alts:['Thigh_Adductor'] }
+      ]}
   ]}
 ];
