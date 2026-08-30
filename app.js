@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '9';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '11';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -136,7 +136,8 @@ function armarPlan(d) {
       objetivoSeries: item.series || null,
       objetivoReps: item.reps || null,
       series: item.series
-        ? Array.from({ length: item.series }, () => ({ peso: null, reps: item.reps, hecha: false }))
+        ? Array.from({ length: item.series },
+            () => ({ peso: cat.carga ? (ultimoPeso(item.id) || 1) : null, reps: item.reps, hecha: false }))
         : null
     };
   });
@@ -277,8 +278,7 @@ function pintarSeries() {
     const campoPeso = ej.carga ?
       '<div class="campo"><span class="k">PESO</span><div class="ctl">' +
         '<button data-paso="p-" aria-label="Bajar peso">−</button>' +
-        '<span class="v' + (s.peso === null ? ' vacio' : '') + '">' +
-          (s.peso === null ? '—' : String(s.peso).replace('.', ',')) + '<small>kg</small></span>' +
+        '<span class="v">' + String(s.peso).replace('.', ',') + '<small>kg</small></span>' +
         '<button data-paso="p+" aria-label="Subir peso">+</button>' +
       '</div></div>' : '';
 
@@ -335,7 +335,8 @@ function pintarEjercicio() {
   // hoja "cambiar"
   const alts = alternativas(ej);
   $('#cuantasAlts').textContent = alts.length === 0 ? ''
-    : alts.length + (alts.length === 1 ? ' opción para el mismo músculo.' : ' opciones para el mismo músculo.');
+    : 'Trabajan el mismo músculo. Elegí la que tengas a mano. ' +
+      (alts.length === 1 ? 'Hay 1 opción.' : 'Hay ' + alts.length + ' opciones.');
   $('#listaAlts').innerHTML = alts.map(id => {
     const c = CATALOGO[id];
     return '<button class="alt" data-cambiar="' + id + '">' +
@@ -372,8 +373,8 @@ $('#listaSeries').addEventListener('click', ev => {
     const s = ej.series[activa];
     if (!s) return;
     const p = paso.dataset.paso;
-    if (p === 'p+') s.peso = (s.peso === null ? 2 : s.peso + 2);
-    if (p === 'p-' && s.peso !== null) s.peso = Math.max(0, s.peso - 2);
+    if (p === 'p+') s.peso = (s.peso === null ? 1 : s.peso + 1);
+    if (p === 'p-' && s.peso !== null) s.peso = Math.max(1, s.peso - 1);
     if (p === 'r+') s.reps++;
     if (p === 'r-') s.reps = Math.max(1, s.reps - 1);
     pintarSeries();
@@ -439,7 +440,9 @@ document.addEventListener('click', ev => {
     ej.lumbar = !!nuevo.lumbar;
     ej.claves = nuevo.claves;
     ej.alts = ej.alts.filter(a => a !== ej.id).concat(idViejo);
-    if (ej.series) ej.series.forEach(s => { if (!s.hecha) s.peso = null; });
+    if (ej.series) ej.series.forEach(s => {
+      if (!s.hecha) s.peso = ej.carga ? (ultimoPeso(ej.id) || 1) : null;
+    });
     $$('.hoja').forEach(h => h.classList.remove('on'));
     pintarEjercicio();
   }
