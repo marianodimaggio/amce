@@ -7,6 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
+const VERSION_APP = '7';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -699,6 +700,7 @@ function edadDe(nacimiento) {
 }
 
 function pintarPerfil() {
+  $('#versionApp').textContent = 'Versión ' + VERSION_APP;
   $('#perfilNombre').value = ajustes.nombre;
   $('#perfilNacimiento').value = ajustes.nacimiento;
   const e = edadDe(ajustes.nacimiento);
