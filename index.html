@@ -105,6 +105,36 @@
     border:1px solid var(--line);border-radius:6px;padding:2px 7px;}
   .jornada .cuando{display:block;font-size:11px;color:var(--dim);margin-top:5px;}
 
+  /* ---------- menú ---------- */
+  .hamb{width:36px;height:36px;background:none;border:none;cursor:pointer;padding:8px 6px;
+    display:flex;flex-direction:column;justify-content:space-between;}
+  .hamb span{display:block;height:2px;border-radius:2px;background:var(--ink);}
+  .hamb span:nth-child(2){width:75%;}
+
+  .cajon{position:absolute;inset:0;z-index:80;background:var(--cream);
+    display:flex;flex-direction:column;padding:0 var(--pad);
+    transform:translateX(101%);transition:transform .26s cubic-bezier(.3,.9,.3,1);}
+  .cajon.on{transform:translateX(0);}
+  .cajonCab{display:flex;align-items:center;justify-content:space-between;
+    padding:calc(18px + env(safe-area-inset-top)) 0 10px;}
+  .cajonCuerpo{flex:1;min-height:0;overflow-y:auto;padding-bottom:24px;}
+
+  .campoTexto{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--paper);border:1px solid var(--line);border-radius:13px;
+    padding:12px 14px;margin-top:9px;}
+  .campoTexto span{font-size:13.5px;color:var(--ink2);font-weight:600;flex:0 0 auto;}
+  .campoTexto input{flex:1;min-width:0;border:none;background:none;text-align:right;
+    font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);}
+  .campoTexto input:focus{outline:none;}
+
+  .colores{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px;}
+  .colores button{aspect-ratio:1/1;border-radius:50%;border:2px solid transparent;
+    cursor:pointer;padding:0;position:relative;}
+  .colores button[aria-pressed="true"]{border-color:var(--ink);}
+  .colores button[aria-pressed="true"]::after{content:'';position:absolute;
+    left:50%;top:50%;width:6px;height:11px;margin:-8px 0 0 -3px;
+    border:2.5px solid var(--ink);border-top:0;border-left:0;transform:rotate(42deg);}
+
   /* ---------- aviso sin conexión ---------- */
   #sinRed{position:absolute;left:0;right:0;top:0;z-index:70;background:var(--ink);
     color:var(--cream);font-size:12.5px;font-weight:600;text-align:center;
@@ -278,11 +308,13 @@
         <img src="icon-192.png" alt="AMCE" width="28" height="28">
         <span class="w">AMCE</span>
         <span class="sp"></span>
-        <button class="link" data-ver="menuHist">Progreso</button>
+        <button class="hamb" data-hoja="menu" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
       </div>
 
       <span class="eyebrow" id="fecha"></span>
-      <h1>Hola, Emi</h1>
+      <h1 id="saludo">Hola, Emi</h1>
 
       <div class="semanas" id="dias"></div>
       <p class="muted" id="regionDia" style="margin:12px 0 0;font-size:13px"></p>
@@ -300,6 +332,32 @@
       <p class="muted" style="margin:4px 0 0;font-size:13px">Siete ejercicios · unos 45 minutos</p>
       <ul class="lista" id="listaHoy"></ul>
       <button class="cta suave" data-cerrar style="margin-top:16px">Cerrar</button>
+    </div>
+
+    <!-- ===================== MENÚ ===================== -->
+    <div class="cajon" id="hoja-menu">
+      <div class="cajonCab">
+        <span class="eyebrow">Ajustes</span>
+        <button class="link" data-cerrar>Cerrar</button>
+      </div>
+
+      <div class="cajonCuerpo">
+        <span class="eyebrow">Perfil</span>
+        <label class="campoTexto">
+          <span>Nombre</span>
+          <input type="text" id="perfilNombre" maxlength="20" placeholder="Emi">
+        </label>
+        <label class="campoTexto">
+          <span>Fecha de nacimiento</span>
+          <input type="date" id="perfilNacimiento">
+        </label>
+        <p class="muted" id="perfilEdad" style="font-size:13px;margin:6px 0 0"></p>
+
+        <span class="eyebrow" style="display:block;margin-top:22px">Color</span>
+        <div class="colores" id="colores"></div>
+
+        <button class="cta suave" data-ver="menuHist" data-cerrar style="margin-top:22px">Ver mi progreso</button>
+      </div>
     </div>
   </section>
 

@@ -146,6 +146,7 @@ function armarPlan(d) {
 function ver(id) {
   $$('.pantalla').forEach(p => p.classList.toggle('on', p.id === id));
   $$('.hoja').forEach(h => h.classList.remove('on'));
+  $$('.cajon').forEach(c => c.classList.remove('on'));
 }
 
 /* ============================================================
@@ -201,6 +202,7 @@ function pintarRacha() {
 
 function pintarHoy() {
   $('#fecha').textContent = fechaLarga();
+  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
   diaVisto = diaSugerido();
   opcionElegida = opcionSugerida(diaVisto);
   pintarDias();
@@ -398,8 +400,14 @@ $('#btnAtras').addEventListener('click', () => {
 
 document.addEventListener('click', ev => {
   const abre = ev.target.closest('[data-hoja]');
-  if (abre) $('#hoja-' + abre.dataset.hoja).classList.add('on');
-  if (ev.target.closest('[data-cerrar]')) $$('.hoja').forEach(h => h.classList.remove('on'));
+  if (abre) {
+    $('#hoja-' + abre.dataset.hoja).classList.add('on');
+    if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarColores(); }
+  }
+  if (ev.target.closest('[data-cerrar]')) {
+    $$('.hoja').forEach(h => h.classList.remove('on'));
+    $$('.cajon').forEach(c => c.classList.remove('on'));
+  }
 
   const cambio = ev.target.closest('[data-cambiar]');
   if (cambio) {
@@ -623,6 +631,95 @@ function entrarALaApp() {
 }
 
 $('#btnEntrar').addEventListener('click', entrarALaApp);
+
+/* ============================================================
+   AJUSTES: color y perfil
+   ============================================================ */
+
+const CLAVE_AJUSTES = 'amce.ajustes';
+
+/* Doce colores. Cada uno con un tono claro para los rellenos y uno
+   más fuerte para lo que tiene que destacar. Todos son suficientemente
+   claros como para que el texto oscuro se lea encima. */
+const COLORES = [
+  { id:'amarillo', nombre:'Amarillo',  claro:'#F7E1A0', fuerte:'#EFCB63' },
+  { id:'durazno',  nombre:'Durazno',   claro:'#FAD7B0', fuerte:'#F0B677' },
+  { id:'coral',    nombre:'Coral',     claro:'#F8C5BC', fuerte:'#EE9A8C' },
+  { id:'rosa',     nombre:'Rosa',      claro:'#F7C9D9', fuerte:'#EC9CBB' },
+  { id:'lila',     nombre:'Lila',      claro:'#DFCCF1', fuerte:'#BFA3E0' },
+  { id:'violeta',  nombre:'Violeta',   claro:'#CFC9F2', fuerte:'#A79DE4' },
+  { id:'cielo',    nombre:'Cielo',     claro:'#C3DCF5', fuerte:'#8FBCE8' },
+  { id:'turquesa', nombre:'Turquesa',  claro:'#B9E3E0', fuerte:'#7FCBC6' },
+  { id:'menta',    nombre:'Menta',     claro:'#C4E7CE', fuerte:'#8FCFA4' },
+  { id:'verde',    nombre:'Verde',     claro:'#D3E4B0', fuerte:'#AECB77' },
+  { id:'arena',    nombre:'Arena',     claro:'#E6DCC6', fuerte:'#CFC09A' },
+  { id:'ladrillo', nombre:'Ladrillo',  claro:'#F0CBB3', fuerte:'#DCA37D' }
+];
+
+let ajustes = { color:'amarillo', nombre:'Emi', nacimiento:'' };
+
+try {
+  const guardado = localStorage.getItem(CLAVE_AJUSTES);
+  if (guardado) ajustes = Object.assign(ajustes, JSON.parse(guardado));
+} catch (e) { /* se usan los valores por defecto */ }
+
+function guardarAjustes() {
+  try { localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(ajustes)); } catch (e) { /* nada */ }
+}
+
+function aplicarColor() {
+  const c = COLORES.find(x => x.id === ajustes.color) || COLORES[0];
+  document.documentElement.style.setProperty('--amarillo', c.claro);
+  document.documentElement.style.setProperty('--amarillo2', c.fuerte);
+}
+
+function pintarColores() {
+  $('#colores').innerHTML = COLORES.map(c =>
+    '<button data-color="' + c.id + '" title="' + c.nombre + '" aria-label="' + c.nombre + '" ' +
+    'aria-pressed="' + (c.id === ajustes.color) + '" ' +
+    'style="background:' + c.claro + '"></button>').join('');
+}
+
+$('#colores').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-color]');
+  if (!b) return;
+  ajustes.color = b.dataset.color;
+  guardarAjustes();
+  aplicarColor();
+  pintarColores();
+});
+
+function edadDe(nacimiento) {
+  if (!nacimiento) return null;
+  const n = new Date(nacimiento), h = new Date();
+  let e = h.getFullYear() - n.getFullYear();
+  const m = h.getMonth() - n.getMonth();
+  if (m < 0 || (m === 0 && h.getDate() < n.getDate())) e--;
+  return (e >= 0 && e < 120) ? e : null;
+}
+
+function pintarPerfil() {
+  $('#perfilNombre').value = ajustes.nombre;
+  $('#perfilNacimiento').value = ajustes.nacimiento;
+  const e = edadDe(ajustes.nacimiento);
+  $('#perfilEdad').textContent = e === null ? '' : e + ' años';
+  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+}
+
+$('#perfilNombre').addEventListener('input', ev => {
+  ajustes.nombre = ev.target.value.trim();
+  guardarAjustes();
+  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+});
+
+$('#perfilNacimiento').addEventListener('change', ev => {
+  ajustes.nacimiento = ev.target.value;
+  guardarAjustes();
+  const e = edadDe(ajustes.nacimiento);
+  $('#perfilEdad').textContent = e === null ? '' : e + ' años';
+});
+
+aplicarColor();
 
 /* ============================================================
    FUNCIONAMIENTO SIN CONEXIÓN
