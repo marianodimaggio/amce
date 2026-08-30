@@ -146,8 +146,6 @@ function armarPlan(d) {
 function ver(id) {
   $$('.pantalla').forEach(p => p.classList.toggle('on', p.id === id));
   $$('.hoja').forEach(h => h.classList.remove('on'));
-  const sc = $('#' + id + ' .scroll');
-  if (sc) sc.scrollTop = 0;
 }
 
 /* ============================================================
@@ -227,7 +225,6 @@ $('#opciones').addEventListener('click', ev => {
   opcionElegida = +b.dataset.opcion;
   pintarOpciones();
   pintarListaEjercicios();
-  $('#tarjetaEj').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
 
 /* ============================================================
@@ -341,7 +338,6 @@ function pintarEjercicio() {
   }).join('') || '<p class="muted">Este ejercicio no tiene reemplazos cargados todavía.</p>';
 
   $('#btnSiguiente').textContent = (i === plan.length - 1) ? 'Terminar la sesión' : 'Siguiente';
-  $('#ejercicio .scroll').scrollTop = 0;
 }
 
 /* ---------- interacciones de la lista de series ---------- */
@@ -520,16 +516,44 @@ $('#listaHistorial').addEventListener('click', ev => {
   ver('historial');
 });
 
+let diaHist = 0, rutinaHist = 0;
+
 function pintarMenuHistorial() {
-  const ids = Object.keys(CATALOGO).filter(id => CATALOGO[id].carga);
-  $('#listaHistorial').innerHTML = ids.map(id => {
-    const filas = historial(id);
-    return '<button class="filaHist" data-hist="' + id + '">' +
-      '<span class="nm">' + CATALOGO[id].nombre + '</span>' +
-      '<span class="muted">' + (filas.length ? filas[filas.length - 1].max + ' kg' : '—') + '</span>' +
-      '</button>';
+  $('#diasHist').innerHTML = DIAS.map((d, k) =>
+    '<button data-diahist="' + k + '" aria-pressed="' + (k === diaHist) + '">' +
+      '<span class="s">Día</span>' + d.n + '</button>').join('');
+
+  const ops = DIAS[diaHist].opciones;
+  if (rutinaHist >= ops.length) rutinaHist = 0;
+  $('#rutinasHist').innerHTML = ops.map((o, k) =>
+    '<button data-rutinahist="' + k + '" aria-pressed="' + (k === rutinaHist) + '" ' +
+    'style="font-size:11.5px">' + o.titulo + '</button>').join('');
+
+  // sólo los ejercicios con carga: son los que tienen peso para comparar
+  const conCarga = ops[rutinaHist].ejercicios.filter(e => CATALOGO[e.id].carga);
+  $('#listaHistorial').innerHTML = conCarga.map(e => {
+    const filas = historial(e.id);
+    const ultimo = filas.length ? filas[filas.length - 1].max + ' kg' : '—';
+    return '<button class="filaHist" data-hist="' + e.id + '">' +
+      '<span class="nm">' + CATALOGO[e.id].nombre + '</span>' +
+      '<span class="muted">' + ultimo + '</span></button>';
   }).join('');
 }
+
+$('#diasHist').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-diahist]');
+  if (!b) return;
+  diaHist = +b.dataset.diahist;
+  rutinaHist = 0;
+  pintarMenuHistorial();
+});
+
+$('#rutinasHist').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-rutinahist]');
+  if (!b) return;
+  rutinaHist = +b.dataset.rutinahist;
+  pintarMenuHistorial();
+});
 
 /* ============================================================
    COPIA DE SEGURIDAD
