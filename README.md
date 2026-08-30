@@ -57,18 +57,16 @@ const BASE_IMG = './img/';
 ## Estructura de la rutina
 
 **Tres días, tres rutinas para elegir en cada uno: nueve rutinas en total.**
-Cada día trabaja una región del cuerpo y las tres opciones cambian el énfasis
-y los ejercicios.
 
-| Día | Región | Opciones |
+| Día | Músculos | Las tres rutinas |
 |---|---|---|
-| 1 | Empuje | Pecho y hombro · Hombro y tríceps · Pecho y tríceps |
-| 2 | Tracción | Espalda y bíceps · Espalda y antebrazo · Espalda completa |
-| 3 | Piernas | Cuádriceps y glúteo · Isquios y glúteo medio · Glúteo y gemelo |
+| 1 | Cuádriceps, femorales, gemelos | En máquinas · Con peso libre · Pierna por pierna |
+| 2 | Hombro, bíceps, tríceps, pecho, espalda | Con mancuernas · En poleas · Mixto |
+| 3 | Abdomen, glúteo, aductores, abductores | En máquinas · En colchoneta · Completo |
 
-La app propone el día siguiente al último que hizo, y dentro de ese día la rutina
-que hace más tiempo que no hace. Emilia puede elegir cualquier otra. Con nueve
-rutinas distintas, no repite ninguna en tres semanas.
+Las tres rutinas de un día cubren los mismos músculos con ejercicios distintos.
+La app propone el día siguiente al último que hizo y, dentro de ese día, la rutina
+que hace más tiempo que no hace. Emilia puede elegir cualquier otra.
 
 Toda rutina tiene siempre la misma forma:
 
@@ -81,6 +79,14 @@ muestra con cuánto lo hizo la vez anterior, como referencia.
 
 Cada serie guarda su propio peso y sus propias repeticiones. No se puede dar una serie por
 hecha sin cargar repeticiones, ni sin cargar peso cuando el ejercicio lleva carga.
+
+## Cambiar un ejercicio
+
+El botón **No está disponible** ofrece todos los ejercicios del catálogo que ocupan el mismo
+lugar en la rutina. No hay listas de reemplazos que mantener: cada ejercicio nuevo que se
+agregue a `CATALOGO` aparece solo como alternativa donde corresponde, según su `slot`.
+
+Hoy son 79 ejercicios y ninguno tiene menos de dos alternativas.
 
 ## Acceso
 

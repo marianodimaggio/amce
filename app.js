@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '7';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '9';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -333,14 +333,31 @@ function pintarEjercicio() {
   $('#listaClaves').innerHTML = ej.claves.map(c => '<li>' + c + '</li>').join('');
 
   // hoja "cambiar"
-  $('#listaAlts').innerHTML = ej.alts.map(id => {
+  const alts = alternativas(ej);
+  $('#cuantasAlts').textContent = alts.length === 0 ? ''
+    : alts.length + (alts.length === 1 ? ' opción para el mismo músculo.' : ' opciones para el mismo músculo.');
+  $('#listaAlts').innerHTML = alts.map(id => {
     const c = CATALOGO[id];
     return '<button class="alt" data-cambiar="' + id + '">' +
       '<img src="' + foto(id, 0) + '" alt="" loading="lazy">' +
-      '<span class="nm">' + c.nombre + (c.lumbar ? '<span class="tag">LUMBAR</span>' : '') + '</span></button>';
-  }).join('') || '<p class="muted">Este ejercicio no tiene reemplazos cargados todavía.</p>';
+      '<span class="nm">' + c.nombre + (c.lumbar ? '<span class="tag">LUMBAR</span>' : '') +
+      '<span class="meta">' + (c.carga ? 'Con peso' : 'Sin peso') + '</span></span></button>';
+  }).join('') || '<p class="muted">No hay reemplazos para este ejercicio.</p>';
 
   $('#btnSiguiente').textContent = (i === plan.length - 1) ? 'Terminar la sesión' : 'Siguiente';
+}
+
+/* Todas las alternativas posibles: cualquier ejercicio del catálogo que
+   ocupe el mismo lugar en la rutina. Primero las sugeridas a mano en
+   datos.js, después el resto. Así, cada ejercicio que se agregue al
+   catálogo aparece solo como opción donde corresponde. */
+function alternativas(ej) {
+  const slot = CATALOGO[ej.id].slot;
+  const mismoSlot = Object.keys(CATALOGO)
+    .filter(id => CATALOGO[id].slot === slot && id !== ej.id);
+  const sugeridas = (ej.alts || []).filter(id => CATALOGO[id] && id !== ej.id);
+  const resto = mismoSlot.filter(id => !sugeridas.includes(id));
+  return sugeridas.concat(resto);
 }
 
 /* ---------- interacciones de la lista de series ---------- */
