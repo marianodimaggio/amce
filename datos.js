@@ -6,6 +6,12 @@
    y cambiá BASE_IMG por './img/'. El README explica cómo.
    ============================================================ */
 
+/* Sincronización con Google. Dejá los dos vacíos y la app funciona
+   igual, guardando sólo en el teléfono. El README explica cómo
+   obtener cada uno. */
+const SYNC_URL = 'https://app-gym-sync.mariano-dimaggio-dac.workers.dev';
+const GOOGLE_CLIENT_ID = '1004130104733-rgqidecu7ng1l9diuln8r1s4vhbo4mm4.apps.googleusercontent.com';
+
 const BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
 /* Cada ejercicio:
