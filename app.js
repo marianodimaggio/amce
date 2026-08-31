@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '14';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '15';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -712,9 +712,9 @@ $('#colores').addEventListener('click', ev => {
   const b = ev.target.closest('[data-color]');
   if (!b) return;
   ajustes.color = b.dataset.color;
-  guardarAjustes();
   aplicarColor();
   pintarColores();
+  guardarPerfilYSubir();
 });
 
 function edadDe(nacimiento) {
@@ -735,17 +735,24 @@ function pintarPerfil() {
   $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
 }
 
+let esperaPerfil = null;
+function guardarPerfilYSubir() {
+  guardarAjustes();
+  clearTimeout(esperaPerfil);
+  esperaPerfil = setTimeout(() => { if (haySesion()) subirDatos(); }, 1200);
+}
+
 $('#perfilNombre').addEventListener('input', ev => {
   ajustes.nombre = ev.target.value.trim();
-  guardarAjustes();
   $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+  guardarPerfilYSubir();
 });
 
 $('#perfilNacimiento').addEventListener('change', ev => {
   ajustes.nacimiento = ev.target.value;
-  guardarAjustes();
   const e = edadDe(ajustes.nacimiento);
   $('#perfilEdad').textContent = e === null ? '' : e + ' años';
+  guardarPerfilYSubir();
 });
 
 aplicarColor();
@@ -769,7 +776,9 @@ async function subirDatos() {
     const r = await fetch(SYNC_URL + '/datos', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Sesion': ajustes.sync.token },
-      body: JSON.stringify(datos)
+      body: JSON.stringify(Object.assign({}, datos, {
+        perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, color: ajustes.color }
+      }))
     });
     if (r.status === 401) { ajustes.sync.token = null; guardarAjustes(); return { ok: false, vencida: true }; }
     if (!r.ok) throw new Error('respuesta ' + r.status);
@@ -793,6 +802,12 @@ async function bajarDatos() {
     if (!r.ok) throw new Error('respuesta ' + r.status);
     const nuevo = await r.json();
     if (!nuevo || !Array.isArray(nuevo.sesiones)) throw new Error('formato');
+    if (nuevo.perfil) {
+      if (nuevo.perfil.nombre) ajustes.nombre = nuevo.perfil.nombre;
+      if (nuevo.perfil.nacimiento) ajustes.nacimiento = nuevo.perfil.nacimiento;
+      if (nuevo.perfil.color) ajustes.color = nuevo.perfil.color;
+      aplicarColor();
+    }
     datos = nuevo;
     almacen.guardar(datos);
     ajustes.sync.ultima = new Date().toISOString();
