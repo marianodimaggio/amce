@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '11';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '14';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -421,7 +421,7 @@ document.addEventListener('click', ev => {
   const abre = ev.target.closest('[data-hoja]');
   if (abre) {
     $('#hoja-' + abre.dataset.hoja).classList.add('on');
-    if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarColores(); }
+    if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarColores(); pintarSync(); }
   }
   if (ev.target.closest('[data-cerrar]')) {
     $$('.hoja').forEach(h => h.classList.remove('on'));
@@ -501,6 +501,7 @@ $('#btnGuardar').addEventListener('click', () => {
   if (!ok) alert('No se pudo guardar la sesión. Revisá que el navegador permita guardar datos.');
   pintarHoy();
   ver('hoy');
+  subirDatos();
 });
 
 /* ============================================================
@@ -646,6 +647,12 @@ $$('[data-ver]').forEach(b => b.addEventListener('click', () => {
    ============================================================ */
 
 function entrarALaApp() {
+  // si la sincronización está configurada, hace falta haber iniciado sesión
+  if (typeof syncConfigurada === 'function' && syncConfigurada() && !haySesion()) {
+    pintarPortada();
+    ver('portada');
+    return;
+  }
   pintarHoy();
   pintarMenuHistorial();
   ver('hoy');
@@ -742,6 +749,171 @@ $('#perfilNacimiento').addEventListener('change', ev => {
 });
 
 aplicarColor();
+
+/* ============================================================
+   SINCRONIZACIÓN CON GOOGLE
+
+   La app abre y funciona SIEMPRE, con o sin sesión iniciada.
+   Iniciar sesión sólo habilita que el historial se guarde en el
+   servidor, para no perderlo al cambiar de teléfono.
+
+   Si faltan SYNC_URL o GOOGLE_CLIENT_ID, nada de esto se activa.
+   ============================================================ */
+
+function syncConfigurada() { return !!SYNC_URL && !!GOOGLE_CLIENT_ID; }
+function haySesion() { return !!(ajustes.sync && ajustes.sync.token); }
+
+async function subirDatos() {
+  if (!syncConfigurada() || !haySesion()) return { ok: false };
+  try {
+    const r = await fetch(SYNC_URL + '/datos', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Sesion': ajustes.sync.token },
+      body: JSON.stringify(datos)
+    });
+    if (r.status === 401) { ajustes.sync.token = null; guardarAjustes(); return { ok: false, vencida: true }; }
+    if (!r.ok) throw new Error('respuesta ' + r.status);
+    ajustes.sync.ultima = new Date().toISOString();
+    ajustes.sync.pendiente = false;
+    guardarAjustes();
+    return { ok: true };
+  } catch (e) {
+    ajustes.sync.pendiente = true;
+    guardarAjustes();
+    return { ok: false };
+  }
+}
+
+async function bajarDatos() {
+  if (!syncConfigurada() || !haySesion()) return { ok: false, motivo: 'Iniciá sesión primero.' };
+  try {
+    const r = await fetch(SYNC_URL + '/datos', { headers: { 'X-Sesion': ajustes.sync.token } });
+    if (r.status === 404) return { ok: false, motivo: 'No hay nada guardado en tu cuenta todavía.' };
+    if (r.status === 401) { ajustes.sync.token = null; guardarAjustes(); return { ok: false, motivo: 'La sesión venció. Entrá de nuevo.' }; }
+    if (!r.ok) throw new Error('respuesta ' + r.status);
+    const nuevo = await r.json();
+    if (!nuevo || !Array.isArray(nuevo.sesiones)) throw new Error('formato');
+    datos = nuevo;
+    almacen.guardar(datos);
+    ajustes.sync.ultima = new Date().toISOString();
+    ajustes.sync.pendiente = false;
+    guardarAjustes();
+    return { ok: true, sesiones: datos.sesiones.length };
+  } catch (e) {
+    return { ok: false, motivo: 'No se pudo traer el historial.' };
+  }
+}
+
+/* Google devuelve acá el token firmado; se lo mandamos al servidor,
+   que lo verifica y nos da una sesión larga. */
+async function entroGoogle(respuesta) {
+  $('#estadoSync').textContent = 'Verificando…';
+  try {
+    const r = await fetch(SYNC_URL + '/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: respuesta.credential })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'no se pudo');
+    ajustes.sync = { token: d.token, email: d.email, ultima: null, pendiente: false };
+    if (!ajustes.nombre && d.nombre) ajustes.nombre = d.nombre;
+    guardarAjustes();
+
+    // si ya había historial en la nube, lo traemos; si no, subimos el de este teléfono
+    const bajada = await bajarDatos();
+    if (!bajada.ok) await subirDatos();
+    pintarPerfil(); pintarSync();
+    entrarALaApp();
+  } catch (e) {
+    $('#estadoSync').textContent = 'No se pudo iniciar sesión.';
+  }
+}
+
+function cerrarSesionGoogle() {
+  ajustes.sync = null;
+  guardarAjustes();
+  pintarSync();
+  pintarPortada();
+  ver('portada');
+}
+
+function textoSync() {
+  if (!haySesion()) return 'Tus datos están sólo en este teléfono.';
+  if (ajustes.sync.pendiente) return 'Hay cambios sin subir. Suben solos cuando haya internet.';
+  if (!ajustes.sync.ultima) return 'Sesión iniciada.';
+  const d = new Date(ajustes.sync.ultima);
+  return 'Última copia: ' + d.getDate() + '/' + (d.getMonth() + 1) + ' a las ' +
+    String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+function pintarSync() {
+  const mostrar = syncConfigurada() && haySesion();
+  $('#bloqueSync').style.display = mostrar ? '' : 'none';
+  if (!mostrar) return;
+  $('#estadoSync').textContent = textoSync();
+  $('#cuentaSync').textContent = ajustes.sync.email || 'Sesión iniciada';
+}
+
+/* La portada: si hace falta iniciar sesión, muestra el botón de Google
+   en lugar del botón de entrar. Una vez adentro, no se ve nunca más. */
+function pintarPortada() {
+  const pedirLogin = syncConfigurada() && !haySesion();
+  $('#zonaLogin').style.display = pedirLogin ? '' : 'none';
+  $('#btnEntrar').style.display = pedirLogin ? 'none' : '';
+  if (!pedirLogin) return;
+
+  if (window.google && google.accounts) {
+    $('#botonGoogle').innerHTML = '';
+    google.accounts.id.renderButton($('#botonGoogle'),
+      { theme: 'filled_black', size: 'large', width: 280, text: 'signin_with', locale: 'es' });
+    $('#avisoLogin').textContent = navigator.onLine
+      ? 'Sólo la primera vez. Después entrás directo, con o sin internet.'
+      : 'Para entrar la primera vez hace falta internet. Conectate y volvé a abrir la app.';
+  } else {
+    $('#avisoLogin').textContent = navigator.onLine
+      ? 'Cargando…'
+      : 'Para entrar la primera vez hace falta internet. Conectate y volvé a abrir la app.';
+  }
+}
+
+function arrancarGoogle() {
+  if (!syncConfigurada() || !window.google || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: entroGoogle,
+    auto_select: false,
+    cancel_on_tap_outside: true
+  });
+  pintarPortada();
+}
+
+if (syncConfigurada()) {
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.async = true; s.defer = true;
+  s.onload = arrancarGoogle;
+  document.head.appendChild(s);
+}
+
+$('#btnSalirGoogle').addEventListener('click', () => {
+  if (confirm('Los datos siguen en este teléfono. ¿Cerrar sesión?')) cerrarSesionGoogle();
+});
+
+$('#btnSincronizar').addEventListener('click', async () => {
+  $('#estadoSync').textContent = 'Subiendo…';
+  const r = await subirDatos();
+  if (r.vencida) pintarSync();          // repinta primero, para no pisar el aviso
+  $('#estadoSync').textContent = r.ok ? textoSync()
+    : (r.vencida ? 'La sesión venció. Entrá de nuevo.' : 'No se pudo subir. Probá con internet.');
+});
+
+window.addEventListener('online', () => {
+  if (haySesion() && ajustes.sync.pendiente) subirDatos();
+  pintarPortada();
+});
+
+pintarPortada();
 
 /* ============================================================
    FUNCIONAMIENTO SIN CONEXIÓN

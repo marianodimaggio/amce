@@ -127,6 +127,13 @@
     font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);}
   .campoTexto input:focus{outline:none;}
 
+  .cuenta{display:flex;align-items:center;gap:10px;background:var(--paper);
+    border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-top:8px;}
+  .cuenta span{flex:1;font-size:13.5px;font-weight:600;word-break:break-all;}
+  .cuenta button{flex:0 0 auto;background:none;border:none;color:var(--ink2);
+    font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline;}
+  #botonGoogle{display:flex;justify-content:center;}
+
   .colores{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px;}
   .colores button{aspect-ratio:1/1;border-radius:50%;border:2px solid transparent;
     cursor:pointer;padding:0;position:relative;}
@@ -298,7 +305,14 @@
       <h1 class="wordmark">AMCE</h1>
       <p class="bajada">Tu rutina del gimnasio, día por día</p>
     </div>
-    <div class="pie"><button class="cta" id="btnEntrar">Entrar</button></div>
+    <div class="pie">
+      <div id="zonaLogin" style="display:none">
+        <div id="botonGoogle"></div>
+        <p class="muted" id="avisoLogin" style="font-size:12.5px;text-align:center;margin:14px 0 0">
+          Sólo la primera vez. Después entrás directo, con o sin internet.</p>
+      </div>
+      <button class="cta" id="btnEntrar">Entrar</button>
+    </div>
   </section>
 
   <!-- ===================== HOY ===================== -->
@@ -355,6 +369,20 @@
 
         <span class="eyebrow" style="display:block;margin-top:22px">Color</span>
         <div class="colores" id="colores"></div>
+
+        <div id="bloqueSync" style="display:none">
+          <span class="eyebrow" style="display:block;margin-top:22px">Tu cuenta</span>
+
+          <div id="conSesion">
+            <div class="cuenta">
+              <span id="cuentaSync"></span>
+              <button id="btnSalirGoogle">Salir</button>
+            </div>
+            <button class="cta suave" id="btnSincronizar" style="margin-top:10px">Guardar copia ahora</button>
+          </div>
+
+          <p class="muted" id="estadoSync" style="font-size:12px;margin:10px 0 0"></p>
+        </div>
 
         <button class="cta suave" data-ver="menuHist" data-cerrar style="margin-top:22px">Ver mi progreso</button>
         <p class="muted" id="versionApp" style="font-size:11.5px;text-align:center;margin-top:16px"></p>
