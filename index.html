@@ -81,10 +81,25 @@
   .wordmark{font-size:44px;font-weight:800;letter-spacing:-.04em;margin:22px 0 0;}
   .bajada{color:var(--ink2);font-size:15.5px;margin:8px 0 0;max-width:260px;}
 
+  .festejo{text-align:center;padding:10px 0 4px;}
+  .festejo span{display:block;font-size:56px;line-height:1;
+    animation:aparece .45s cubic-bezier(.2,1.4,.4,1);}
+  .festejo b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:8px;}
+  @keyframes aparece{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+
   /* ---------- selector de semana ---------- */
   .semanas{display:flex;gap:8px;margin-top:14px;}
   .semanas button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink2);
-    border-radius:12px;padding:11px 4px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+    border-radius:12px;padding:11px 4px;font-family:inherit;font-size:13px;font-weight:600;
+    cursor:pointer;position:relative;}
+  .semanas button.hecho{background:var(--amarillo);border-color:var(--amarillo2);color:var(--ink);}
+  .semanas button.hecho[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+  .tildeDia{position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%;
+    background:var(--ink);display:block;}
+  .tildeDia::after{content:'';position:absolute;left:5px;top:2px;width:3px;height:7px;
+    border:2px solid var(--cream);border-top:0;border-left:0;transform:rotate(42deg);}
+  .semanas button.hecho[aria-pressed="true"] .tildeDia{background:var(--amarillo2);}
+  .semanas button.hecho[aria-pressed="true"] .tildeDia::after{border-color:var(--ink);}
   .semanas button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream);}
   .semanas button .s{display:block;font-size:9.5px;font-weight:700;letter-spacing:.1em;
     text-transform:uppercase;opacity:.6;}
@@ -271,12 +286,12 @@
   .alt .meta{display:block;font-size:11.5px;font-weight:500;color:var(--dim);margin-top:2px;}
 
   /* ---------- cierre ---------- */
-  .dato{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);}
+  .dato{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);}
   .dato:last-child{border-bottom:none;}
   .dato .v{font-weight:700;}
   .escala{display:flex;gap:9px;margin-top:14px;}
   .escala button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink);
-    border-radius:14px;padding:16px 4px;font-family:inherit;font-weight:700;cursor:pointer;}
+    border-radius:14px;padding:13px 4px;font-family:inherit;font-weight:700;cursor:pointer;}
   .escala button b{display:block;font-size:22px;font-weight:800;}
   .escala button span{font-size:11px;font-weight:500;color:var(--dim);}
   .escala button[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo2);}
@@ -409,7 +424,9 @@
         </div>
 
         <button class="cta suave" data-ver="menuHist" data-cerrar style="margin-top:22px">Ver mi progreso</button>
-        <p class="muted" id="versionApp" style="font-size:11.5px;text-align:center;margin-top:16px"></p>
+        <button class="cta suave" id="btnActualizar" style="margin-top:10px">Buscar actualizaciones</button>
+        <p class="muted" id="estadoActualizar" style="font-size:11.5px;text-align:center;margin-top:8px"></p>
+        <p class="muted" id="versionApp" style="font-size:11.5px;text-align:center;margin-top:4px"></p>
       </div>
     </div>
   </section>
@@ -479,7 +496,10 @@
       <span class="eyebrow">Fin de la sesión</span>
     </div>
     <div class="cuerpo">
-      <span class="eyebrow">Terminaste</span>
+      <div class="festejo">
+        <span id="emojiCierre"></span>
+        <b id="felicitacion"></b>
+      </div>
       <h1 id="tituloCierre"></h1>
       <p class="muted" id="subCierre" style="margin-top:6px"></p>
 

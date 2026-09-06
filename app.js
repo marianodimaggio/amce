@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '18';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '20';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -48,6 +48,25 @@ function fechaLarga() {
   const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
   const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   return dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
+}
+
+/* El lunes de la semana en curso, para saber qué ya hizo. */
+function lunesDeEstaSemana() {
+  const h = new Date();
+  const dia = (h.getDay() + 6) % 7;          // 0 = lunes
+  h.setDate(h.getDate() - dia);
+  h.setHours(0, 0, 0, 0);
+  return h;
+}
+
+function diasHechosEstaSemana() {
+  const desde = lunesDeEstaSemana();
+  const hechos = new Set();
+  datos.sesiones.forEach(s => {
+    const f = new Date(s.fecha + 'T00:00:00');
+    if (f >= desde) hechos.add(s.dia);
+  });
+  return hechos;
 }
 
 /* Qué día propone la app: el siguiente al último que hizo. */
@@ -159,9 +178,12 @@ let diaVisto = 0;         // índice del día que se está mirando
 let opcionElegida = 0;    // índice de la rutina seleccionada
 
 function pintarDias() {
+  const hechos = diasHechosEstaSemana();
   $('#dias').innerHTML = DIAS.map((d, k) =>
-    '<button data-dia="' + k + '" aria-pressed="' + (k === diaVisto) + '">' +
+    '<button data-dia="' + k + '" aria-pressed="' + (k === diaVisto) + '"' +
+      (hechos.has(d.n) ? ' class="hecho"' : '') + '>' +
       '<span class="s">Día</span>' + d.n +
+      (hechos.has(d.n) ? '<i class="tildeDia"></i>' : '') +
     '</button>').join('');
   $('#regionDia').textContent = DIAS[diaVisto].region + ' · ' + DIAS[diaVisto].resumen;
 }
@@ -197,11 +219,13 @@ function pintarListaEjercicios() {
 }
 
 function pintarRacha() {
-  const ult = datos.sesiones.slice(-6);
-  $('#racha').innerHTML = Array.from({ length: 6 }, (_, k) =>
-    '<i class="punto' + (k >= 6 - ult.length ? ' hecho' : '') + '"></i>').join('') +
-    '<span class="muted" style="margin-left:8px;font-size:13px">' +
-    datos.sesiones.length + (datos.sesiones.length === 1 ? ' sesión' : ' sesiones') + '</span>';
+  const hechos = diasHechosEstaSemana().size;
+  const texto = hechos === 0 ? 'Todavía no entrenaste esta semana'
+    : hechos >= 3 ? '¡Semana completa!'
+    : hechos + ' de 3 esta semana';
+  $('#racha').innerHTML = Array.from({ length: 3 }, (_, k) =>
+    '<i class="punto' + (k < hechos ? ' hecho' : '') + '"></i>').join('') +
+    '<span class="muted" style="margin-left:10px;font-size:13px">' + texto + '</span>';
 }
 
 function pintarHoy() {
@@ -582,6 +606,14 @@ document.addEventListener('click', ev => {
    PANTALLA: CIERRE
    ============================================================ */
 
+const FELICITACIONES = [
+  { emoji: '\u{1F4AA}', texto: '\u00A1Bien ah\u00ED!' },
+  { emoji: '\u{1F525}', texto: '\u00A1Qu\u00E9 m\u00E1quina!' },
+  { emoji: '\u2B50',    texto: '\u00A1Otro d\u00EDa menos!' },
+  { emoji: '\u{1F64C}', texto: '\u00A1Terminaste!' },
+  { emoji: '\u{1F389}', texto: '\u00A1Buen\u00EDsimo!' }
+];
+
 function pintarCierre() {
   const hechas = plan.reduce((a, e) => a + (e.series ? e.series.filter(s => s.hecha).length : 0), 0);
   const totales = plan.reduce((a, e) => a + (e.series ? e.series.length : 0), 0);
@@ -598,6 +630,14 @@ function pintarCierre() {
     subio + (subio === 1 ? ' ejercicio' : ' ejercicios');
   $('#tituloCierre').textContent = rutina.titulo;
   $('#subCierre').textContent = 'Día ' + nDia + ' · ' + DIAS[nDia - 1].region;
+
+  // si con esta sesión cierra las tres del semana, se festeja distinto
+  const completa = diasHechosEstaSemana().add(nDia).size >= 3;
+  const f = completa
+    ? { emoji: '\u{1F3C6}', texto: '\u00A1Semana completa!' }
+    : FELICITACIONES[Math.floor(Math.random() * FELICITACIONES.length)];
+  $('#emojiCierre').textContent = f.emoji;
+  $('#felicitacion').textContent = f.texto;
 }
 
 /* Desde el cierre se puede volver al último ejercicio: es fácil
@@ -1070,11 +1110,35 @@ pintarPortada();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(e => {
-      console.warn('No se pudo activar el modo sin conexión:', e);
-    });
+    // updateViaCache 'none' evita que el navegador guarde el propio sw.js,
+    // que era lo que hacía que los cambios tardaran hasta un día en verse.
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+      .then(reg => { reg.update(); })
+      .catch(e => { console.warn('No se pudo activar el modo sin conexión:', e); });
   });
 }
+
+/* Botón de mantenimiento: borra lo guardado por el navegador y recarga.
+   NO toca el historial ni los ajustes, que viven en localStorage. */
+async function actualizarApp() {
+  $('#estadoActualizar').textContent = 'Actualizando…';
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if (window.caches) {
+      const claves = await caches.keys();
+      await Promise.all(claves.map(k => caches.delete(k)));
+    }
+  } catch (e) {
+    console.warn('No se pudo limpiar todo:', e);
+  }
+  // el parámetro fuerza al navegador a pedir todo de nuevo
+  location.replace(location.pathname + '?a=' + Date.now());
+}
+
+$('#btnActualizar').addEventListener('click', actualizarApp);
 
 function avisarConexion() {
   const previo = $('#sinRed');
