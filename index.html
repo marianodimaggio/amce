@@ -142,9 +142,6 @@
     font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);padding:0;}
   .campoTexto input:focus{outline:none;}
 
-  .agregarEj{width:100%;margin-top:12px;background:none;border:1px dashed var(--line);
-    color:var(--ink2);border-radius:12px;padding:12px;font-family:inherit;
-    font-size:14px;font-weight:700;cursor:pointer;}
   .lista li .quitar{background:none;border:none;color:var(--dim);font-family:inherit;
     font-size:17px;line-height:1;padding:0 2px;cursor:pointer;flex:0 0 auto;}
   .lista li.extra .nm{font-style:normal;}
@@ -298,9 +295,15 @@
   .escala button[aria-pressed="true"] span{color:rgba(43,43,41,.7);}
 
   /* ---------- historial ---------- */
-  .verEj{width:100%;margin-top:10px;background:none;border:1px dashed var(--line);
+  .filaEj{display:flex;gap:8px;margin-top:10px;}
+  .verEj{flex:1;background:none;border:1px dashed var(--line);
     color:var(--ink2);border-radius:12px;padding:11px;font-family:inherit;
     font-size:13.5px;font-weight:600;cursor:pointer;}
+  .masEj{flex:0 0 46px;width:46px;background:var(--amarillo);border:none;border-radius:12px;
+    color:var(--ink);font-family:inherit;font-size:24px;font-weight:600;line-height:1;
+    cursor:pointer;padding:0;}
+  .cabHoja{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .cabHoja .masEj{flex:0 0 40px;width:40px;height:40px;font-size:22px;}
   .filaHist{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;
     background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:12px 14px;
     margin-bottom:8px;color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:600;
@@ -362,7 +365,10 @@
       <p class="muted" id="regionDia" style="margin:12px 0 0;font-size:13px"></p>
       <div id="opciones"></div>
 
-      <button class="verEj" data-hoja="ejercicios">Ver los 7 ejercicios</button>
+      <div class="filaEj">
+        <button class="verEj" data-hoja="ejercicios" id="btnVerEj">Ver los ejercicios</button>
+        <button class="masEj" data-hoja="agregar" aria-label="Agregar un ejercicio">+</button>
+      </div>
 
       <div class="racha" id="racha"></div>
     </div>
@@ -370,10 +376,14 @@
 
     <div class="hoja" id="hoja-ejercicios">
       <div class="asa"></div>
-      <h2 id="diaTitulo"></h2>
-      <p class="muted" style="margin:4px 0 0;font-size:13px">Siete ejercicios · unos 45 minutos</p>
+      <div class="cabHoja">
+        <div>
+          <h2 id="diaTitulo"></h2>
+          <p class="muted" id="cuantosEj" style="margin:2px 0 0;font-size:13px"></p>
+        </div>
+        <button class="masEj" data-hoja="agregar" aria-label="Agregar un ejercicio">+</button>
+      </div>
       <ul class="lista" id="listaHoy"></ul>
-      <button class="agregarEj" data-hoja="agregar">+ Agregar un ejercicio</button>
       <button class="cta suave" data-cerrar style="margin-top:10px">Cerrar</button>
     </div>
 

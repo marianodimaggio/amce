@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '20';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '21';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -203,7 +203,10 @@ function pintarOpciones() {
 
 function pintarListaEjercicios() {
   const o = DIAS[diaVisto].opciones[opcionElegida];
+  const total = ejerciciosDe(o).length;
   $('#diaTitulo').textContent = o.titulo;
+  $('#cuantosEj').textContent = total + ' ejercicios · unos ' + (30 + (total - 5) * 7) + ' minutos';
+  $('#btnVerEj').textContent = 'Ver los ' + total + ' ejercicios';
   $('#listaHoy').innerHTML = ejerciciosDe(o).map((item, k) => {
     const cat = CATALOGO[item.id];
     const meta = item.minutos ? item.minutos + ' min'
