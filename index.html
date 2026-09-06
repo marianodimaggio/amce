@@ -127,6 +127,17 @@
     font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);padding:0;}
   .campoTexto input:focus{outline:none;}
 
+  .agregarEj{width:100%;margin-top:12px;background:none;border:1px dashed var(--line);
+    color:var(--ink2);border-radius:12px;padding:12px;font-family:inherit;
+    font-size:14px;font-weight:700;cursor:pointer;}
+  .lista li .quitar{background:none;border:none;color:var(--dim);font-family:inherit;
+    font-size:17px;line-height:1;padding:0 2px;cursor:pointer;flex:0 0 auto;}
+  .lista li.extra .nm{font-style:normal;}
+  .grupos{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .grupos button{background:var(--cream);border:1px solid var(--line);color:var(--ink2);
+    border-radius:9px;padding:7px 11px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;}
+  .grupos button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+
   .cuenta{display:flex;align-items:center;gap:10px;background:var(--paper);
     border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-top:8px;}
   .cuenta span{flex:1;font-size:13.5px;font-weight:600;word-break:break-all;}
@@ -215,15 +226,17 @@
   .serie.act .cuerpo{display:block;}
 
   .campos{display:flex;gap:10px;}
-  .campo{flex:1;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:10px;}
+  .campo{flex:1;background:var(--cream);border:1px solid var(--line);border-radius:14px;
+    padding:9px 12px 11px;position:relative;}
   .campo .k{display:block;font-size:9.5px;font-weight:700;letter-spacing:.13em;color:var(--dim);
-    text-align:center;margin-bottom:7px;}
-  .campo .ctl{display:flex;align-items:center;justify-content:space-between;gap:6px;}
-  .campo .ctl button{width:42px;height:42px;border-radius:12px;background:var(--paper);
-    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;
-    line-height:1;cursor:pointer;flex:0 0 42px;}
-  .campo .ctl .v{flex:1;text-align:center;font-size:25px;font-weight:800;letter-spacing:-.02em;}
-  .campo .ctl .v small{font-size:11.5px;color:var(--dim);font-weight:700;margin-left:2px;}
+    text-align:center;margin-bottom:4px;}
+  .campo .dato{display:block;width:100%;border:none;background:none;text-align:center;
+    font-family:inherit;font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--ink);
+    padding:4px 0;-moz-appearance:textfield;}
+  .campo .dato:focus{outline:none;}
+  .campo .dato::-webkit-outer-spin-button,
+  .campo .dato::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .campo .u{position:absolute;right:12px;bottom:14px;font-size:11.5px;color:var(--dim);font-weight:700;}
 
   .btnHecha{width:100%;margin-top:10px;background:var(--ink);color:var(--cream);border:none;
     border-radius:13px;padding:15px;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;}
@@ -345,7 +358,18 @@
       <h2 id="diaTitulo"></h2>
       <p class="muted" style="margin:4px 0 0;font-size:13px">Siete ejercicios · unos 45 minutos</p>
       <ul class="lista" id="listaHoy"></ul>
-      <button class="cta suave" data-cerrar style="margin-top:16px">Cerrar</button>
+      <button class="agregarEj" data-hoja="agregar">+ Agregar un ejercicio</button>
+      <button class="cta suave" data-cerrar style="margin-top:10px">Cerrar</button>
+    </div>
+
+    <div class="hoja" id="hoja-agregar">
+      <div class="asa"></div>
+      <h2>Agregar un ejercicio</h2>
+      <p class="muted" style="margin:6px 0 12px;font-size:13px">
+        Elegí el grupo y después el ejercicio. Se suma al final de esta rutina.</p>
+      <div class="grupos" id="gruposAgregar"></div>
+      <div id="listaAgregar"></div>
+      <button class="cta suave" data-cerrar style="margin-top:10px">Cancelar</button>
     </div>
 
     <!-- ===================== MENÚ ===================== -->
@@ -451,6 +475,7 @@
   <!-- ===================== CIERRE ===================== -->
   <section class="pantalla" id="cierre">
     <div class="barraSup">
+      <button class="link" id="btnVolverEj">← Atrás</button>
       <span class="eyebrow">Fin de la sesión</span>
     </div>
     <div class="cuerpo">

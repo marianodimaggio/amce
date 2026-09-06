@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '15';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '18';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -121,7 +121,7 @@ let plan = [];       // ejercicios de la sesión, ya resueltos contra el catálo
 let i = 0;           // ejercicio actual
 
 function armarPlan(d) {
-  return d.ejercicios.map(item => {
+  return ejerciciosDe(d).map(item => {
     const cat = CATALOGO[item.id];
     return {
       id: item.id,
@@ -182,15 +182,17 @@ function pintarOpciones() {
 function pintarListaEjercicios() {
   const o = DIAS[diaVisto].opciones[opcionElegida];
   $('#diaTitulo').textContent = o.titulo;
-  $('#listaHoy').innerHTML = o.ejercicios.map((item, k) => {
+  $('#listaHoy').innerHTML = ejerciciosDe(o).map((item, k) => {
     const cat = CATALOGO[item.id];
     const meta = item.minutos ? item.minutos + ' min'
       : (cat.tiempo ? item.series + ' × ' + item.reps + '″' : item.series + ' × ' + item.reps);
     const clase = (item.minutos || cat.slot === 'ZONA MEDIA') ? ' class="pre"' : '';
     const tag = cat.lumbar ? '<span class="tag">LUMBAR</span>' : '';
+    const quitar = item.extra
+      ? '<button class="quitar" data-quitar="' + item.id + '" aria-label="Quitar">×</button>' : '';
     return '<li' + clase + '><span class="idx">' + String(k + 1).padStart(2, '0') + '</span>' +
       '<span class="nm">' + cat.nombre + tag + '</span>' +
-      '<span class="sr">' + meta + '</span></li>';
+      '<span class="sr">' + meta + '</span>' + quitar + '</li>';
   }).join('');
 }
 
@@ -232,6 +234,100 @@ $('#opciones').addEventListener('click', ev => {
 });
 
 /* ============================================================
+   EJERCICIOS AGREGADOS POR EMILIA
+   Se guardan por rutina y quedan para siempre. Viajan con la
+   cuenta, igual que el perfil.
+   ============================================================ */
+
+function extrasDe(idRutina) {
+  return (ajustes.extras && ajustes.extras[idRutina]) || [];
+}
+
+function agregarExtra(idRutina, idEjercicio) {
+  if (!ajustes.extras) ajustes.extras = {};
+  if (!ajustes.extras[idRutina]) ajustes.extras[idRutina] = [];
+  if (ajustes.extras[idRutina].includes(idEjercicio)) return false;
+  ajustes.extras[idRutina].push(idEjercicio);
+  guardarPerfilYSubir();
+  return true;
+}
+
+function quitarExtra(idRutina, idEjercicio) {
+  if (!ajustes.extras || !ajustes.extras[idRutina]) return;
+  ajustes.extras[idRutina] = ajustes.extras[idRutina].filter(x => x !== idEjercicio);
+  guardarPerfilYSubir();
+}
+
+/* Los ejercicios de una rutina: los de siempre más los agregados. */
+function ejerciciosDe(rutina) {
+  const extras = extrasDe(rutina.id).map(id => {
+    const c = CATALOGO[id];
+    return { id, series: 3, reps: c.tiempo ? 20 : 10, extra: true };
+  });
+  return rutina.ejercicios.concat(extras);
+}
+
+/* Catálogo agrupado por grupo muscular, para elegir. */
+let grupoElegido = null;
+
+function gruposDelCatalogo() {
+  const g = {};
+  for (const [id, e] of Object.entries(CATALOGO)) {
+    if (e.slot === 'CARDIO') continue;          // el cardio es la entrada, no se suma
+    (g[e.slot] = g[e.slot] || []).push(id);
+  }
+  return g;
+}
+
+function pintarAgregar() {
+  const grupos = gruposDelCatalogo();
+  const nombres = Object.keys(grupos).sort();
+  if (!grupoElegido || !grupos[grupoElegido]) grupoElegido = nombres[0];
+
+  $('#gruposAgregar').innerHTML = nombres.map(n =>
+    '<button data-grupo="' + n + '" aria-pressed="' + (n === grupoElegido) + '">' +
+    n.charAt(0) + n.slice(1).toLowerCase() + '</button>').join('');
+
+  const rutina = DIAS[diaVisto].opciones[opcionElegida];
+  const yaEstan = ejerciciosDe(rutina).map(e => e.id);
+
+  $('#listaAgregar').innerHTML = grupos[grupoElegido].map(id => {
+    const c = CATALOGO[id];
+    const puesto = yaEstan.includes(id);
+    return '<button class="alt"' + (puesto ? ' disabled style="opacity:.45"' : '') +
+      ' data-sumar="' + id + '">' +
+      '<img src="' + foto(id, 0) + '" alt="" loading="lazy">' +
+      '<span class="nm">' + c.nombre + (c.lumbar ? '<span class="tag">LUMBAR</span>' : '') +
+      '<span class="meta">' + (puesto ? 'Ya está en la rutina' : (c.carga ? 'Con peso' : 'Sin peso')) +
+      '</span></span></button>';
+  }).join('');
+}
+
+$('#gruposAgregar').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-grupo]');
+  if (!b) return;
+  grupoElegido = b.dataset.grupo;
+  pintarAgregar();
+});
+
+$('#listaAgregar').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-sumar]');
+  if (!b || b.disabled) return;
+  const rutina = DIAS[diaVisto].opciones[opcionElegida];
+  agregarExtra(rutina.id, b.dataset.sumar);
+  $('#hoja-agregar').classList.remove('on');
+  pintarListaEjercicios();
+});
+
+$('#listaHoy').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-quitar]');
+  if (!b) return;
+  const rutina = DIAS[diaVisto].opciones[opcionElegida];
+  quitarExtra(rutina.id, b.dataset.quitar);
+  pintarListaEjercicios();
+});
+
+/* ============================================================
    PANTALLA: EJERCICIO
    ============================================================ */
 
@@ -245,7 +341,9 @@ function textoSerie(ej, s) {
 /* Una serie sólo se puede dar por hecha si tiene repeticiones y,
    cuando el ejercicio lleva carga, también un peso cargado. */
 function serieValida(ej, s) {
-  if (!s.reps || s.reps < 1) return { ok: false, motivo: 'Poné cuántas repeticiones hiciste.' };
+  if (s.reps === null || s.reps === undefined || s.reps < 1) {
+    return { ok: false, motivo: 'Poné cuántas repeticiones hiciste.' };
+  }
   if (ej.carga && (s.peso === null || s.peso === undefined)) {
     return { ok: false, motivo: 'Poné con cuánto peso la hiciste.' };
   }
@@ -276,22 +374,21 @@ function pintarSeries() {
     if (estado !== 'act') return '<div class="serie ' + estado + '">' + cabecera + '</div>';
 
     const campoPeso = ej.carga ?
-      '<div class="campo"><span class="k">PESO</span><div class="ctl">' +
-        '<button data-paso="p-" aria-label="Bajar peso">−</button>' +
-        '<span class="v">' + String(s.peso).replace('.', ',') + '<small>kg</small></span>' +
-        '<button data-paso="p+" aria-label="Subir peso">+</button>' +
-      '</div></div>' : '';
+      '<div class="campo"><span class="k">PESO</span>' +
+        '<input class="dato" type="text" inputmode="decimal" data-campo="peso" ' +
+          'value="' + String(s.peso).replace('.', ',') + '" aria-label="Peso en kilos">' +
+        '<span class="u">kg</span>' +
+      '</div>' : '';
 
     const campoReps =
-      '<div class="campo"><span class="k">' + (ej.tiempo ? 'SEGUNDOS' : 'REPETICIONES') + '</span><div class="ctl">' +
-        '<button data-paso="r-" aria-label="Menos repeticiones">−</button>' +
-        '<span class="v">' + s.reps + '</span>' +
-        '<button data-paso="r+" aria-label="Más repeticiones">+</button>' +
-      '</div></div>';
+      '<div class="campo"><span class="k">' + (ej.tiempo ? 'SEGUNDOS' : 'REPETICIONES') + '</span>' +
+        '<input class="dato" type="text" inputmode="numeric" data-campo="reps" ' +
+          'value="' + s.reps + '" aria-label="' + (ej.tiempo ? 'Segundos' : 'Repeticiones') + '">' +
+      '</div>';
 
     const v = serieValida(ej, s);
     const boton = '<button class="btnHecha" data-hecha="' + n + '"' + (v.ok ? '' : ' disabled') + '>Serie hecha</button>';
-    const aviso = v.ok ? '' : '<p class="aviso">' + v.motivo + '</p>';
+    const aviso = '<p class="aviso">' + (v.ok ? '' : v.motivo) + '</p>';
 
     return '<div class="serie act">' + cabecera +
       '<div class="cuerpo"><div class="campos">' + campoPeso + campoReps + '</div>' +
@@ -363,23 +460,49 @@ function alternativas(ej) {
 
 /* ---------- interacciones de la lista de series ---------- */
 
+/* Los campos se leen mientras escribe, sin redibujar: si redibujáramos,
+   el teclado se cerraría en cada tecla. */
+function serieActiva() {
+  const ej = plan[i];
+  if (!ej || !ej.series) return null;
+  return ej.series[ej.series.findIndex(s => !s.hecha)] || null;
+}
+
+function leerNumero(txt) {
+  const n = parseFloat(String(txt).replace(',', '.'));
+  return isNaN(n) ? null : n;
+}
+
+$('#listaSeries').addEventListener('input', ev => {
+  const campo = ev.target.closest('[data-campo]');
+  if (!campo) return;
+  const s = serieActiva();
+  if (!s) return;
+  const n = leerNumero(campo.value);
+  if (campo.dataset.campo === 'peso') s.peso = n;
+  else s.reps = n;
+  // sólo habilitar o no el botón, sin tocar el resto
+  const v = serieValida(plan[i], s);
+  const btn = $('#listaSeries .btnHecha');
+  if (btn) btn.disabled = !v.ok;
+  const aviso = $('#listaSeries .aviso');
+  if (aviso) aviso.textContent = v.ok ? '' : v.motivo;
+});
+
+/* Al salir del campo, normalizar lo que haya quedado a medio escribir. */
+$('#listaSeries').addEventListener('blur', ev => {
+  const campo = ev.target.closest('[data-campo]');
+  if (!campo) return;
+  const s = serieActiva();
+  if (!s) return;
+  if (campo.dataset.campo === 'peso' && (s.peso === null || s.peso < 1)) s.peso = 1;
+  if (campo.dataset.campo === 'reps' && (s.reps === null || s.reps < 1)) s.reps = 1;
+  pintarSeries();
+}, true);
+
 $('#listaSeries').addEventListener('click', ev => {
   const ej = plan[i];
   if (!ej || !ej.series) return;
-
-  const paso = ev.target.closest('[data-paso]');
-  if (paso) {
-    const activa = ej.series.findIndex(s => !s.hecha);
-    const s = ej.series[activa];
-    if (!s) return;
-    const p = paso.dataset.paso;
-    if (p === 'p+') s.peso = (s.peso === null ? 1 : s.peso + 1);
-    if (p === 'p-' && s.peso !== null) s.peso = Math.max(1, s.peso - 1);
-    if (p === 'r+') s.reps++;
-    if (p === 'r-') s.reps = Math.max(1, s.reps - 1);
-    pintarSeries();
-    return;
-  }
 
   const hecha = ev.target.closest('[data-hecha]');
   if (hecha) {
@@ -422,6 +545,7 @@ document.addEventListener('click', ev => {
   if (abre) {
     $('#hoja-' + abre.dataset.hoja).classList.add('on');
     if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarColores(); pintarSync(); }
+    if (abre.dataset.hoja === 'agregar') pintarAgregar();
   }
   if (ev.target.closest('[data-cerrar]')) {
     $$('.hoja').forEach(h => h.classList.remove('on'));
@@ -475,6 +599,14 @@ function pintarCierre() {
   $('#tituloCierre').textContent = rutina.titulo;
   $('#subCierre').textContent = 'Día ' + nDia + ' · ' + DIAS[nDia - 1].region;
 }
+
+/* Desde el cierre se puede volver al último ejercicio: es fácil
+   tocar Siguiente sin querer y quedarse sin salida. */
+$('#btnVolverEj').addEventListener('click', () => {
+  i = plan.length - 1;
+  pintarEjercicio();
+  ver('ejercicio');
+});
 
 $('#escala').addEventListener('click', ev => {
   const b = ev.target.closest('button');
@@ -777,7 +909,8 @@ async function subirDatos() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Sesion': ajustes.sync.token },
       body: JSON.stringify(Object.assign({}, datos, {
-        perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, color: ajustes.color }
+        perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, color: ajustes.color },
+        extras: ajustes.extras || {}
       }))
     });
     if (r.status === 401) { ajustes.sync.token = null; guardarAjustes(); return { ok: false, vencida: true }; }
@@ -808,6 +941,7 @@ async function bajarDatos() {
       if (nuevo.perfil.color) ajustes.color = nuevo.perfil.color;
       aplicarColor();
     }
+    if (nuevo.extras) ajustes.extras = nuevo.extras;
     datos = nuevo;
     almacen.guardar(datos);
     ajustes.sync.ultima = new Date().toISOString();
