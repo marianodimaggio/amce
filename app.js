@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '21';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '22';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -233,7 +233,7 @@ function pintarRacha() {
 
 function pintarHoy() {
   $('#fecha').textContent = fechaLarga();
-  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+  $('#saludo').textContent = ajustes.nombre ? 'Hola, ' + ajustes.nombre : 'Hola';
   diaVisto = diaSugerido();
   opcionElegida = opcionSugerida(diaVisto);
   pintarDias();
@@ -859,7 +859,7 @@ const COLORES = [
   { id:'ladrillo', nombre:'Ladrillo',  claro:'#F0CBB3', fuerte:'#DCA37D' }
 ];
 
-let ajustes = { color:'amarillo', nombre:'Emi', nacimiento:'' };
+let ajustes = { color:'amarillo', nombre:'', nacimiento:'' };
 
 try {
   const guardado = localStorage.getItem(CLAVE_AJUSTES);
@@ -907,7 +907,7 @@ function pintarPerfil() {
   $('#perfilNacimiento').value = ajustes.nacimiento;
   const e = edadDe(ajustes.nacimiento);
   $('#perfilEdad').textContent = e === null ? '' : e + ' años';
-  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+  $('#saludo').textContent = ajustes.nombre ? 'Hola, ' + ajustes.nombre : 'Hola';
 }
 
 let esperaPerfil = null;
@@ -919,7 +919,7 @@ function guardarPerfilYSubir() {
 
 $('#perfilNombre').addEventListener('input', ev => {
   ajustes.nombre = ev.target.value.trim();
-  $('#saludo').textContent = 'Hola, ' + (ajustes.nombre || 'Emi');
+  $('#saludo').textContent = ajustes.nombre ? 'Hola, ' + ajustes.nombre : 'Hola';
   guardarPerfilYSubir();
 });
 
@@ -986,6 +986,7 @@ async function bajarDatos() {
     }
     if (nuevo.extras) ajustes.extras = nuevo.extras;
     datos = nuevo;
+    datos.duenio = ajustes.sync.email;
     almacen.guardar(datos);
     ajustes.sync.ultima = new Date().toISOString();
     ajustes.sync.pendiente = false;
@@ -1008,13 +1009,27 @@ async function entroGoogle(respuesta) {
     });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || 'no se pudo');
+    const otraCuenta = datos.duenio && datos.duenio !== d.email;
+    if (otraCuenta) {
+      // lo que hay en este teléfono es de otra persona: no se toca ni se sube
+      datos = { sesiones: [], duenio: d.email };
+      ajustes.nombre = '';
+      ajustes.nacimiento = '';
+      ajustes.extras = {};
+      almacen.guardar(datos);
+    }
+
     ajustes.sync = { token: d.token, email: d.email, ultima: null, pendiente: false };
-    if (!ajustes.nombre && d.nombre) ajustes.nombre = d.nombre;
+    if (!ajustes.nombre && d.nombre) ajustes.nombre = d.nombre;   // el de la cuenta de Google
     guardarAjustes();
 
     // si ya había historial en la nube, lo traemos; si no, subimos el de este teléfono
     const bajada = await bajarDatos();
-    if (!bajada.ok) await subirDatos();
+    if (!bajada.ok) {
+      datos.duenio = d.email;
+      almacen.guardar(datos);
+      await subirDatos();
+    }
     pintarPerfil(); pintarSync();
     entrarALaApp();
   } catch (e) {
@@ -1023,7 +1038,14 @@ async function entroGoogle(respuesta) {
 }
 
 function cerrarSesionGoogle() {
+  // los datos ya están en el servidor: se limpian del teléfono para que
+  // la próxima persona que entre no vea nada de la anterior
+  datos = { sesiones: [] };
+  almacen.guardar(datos);
   ajustes.sync = null;
+  ajustes.nombre = '';
+  ajustes.nacimiento = '';
+  ajustes.extras = {};
   guardarAjustes();
   pintarSync();
   pintarPortada();
