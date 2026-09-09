@@ -61,6 +61,7 @@
   .cuerpo{flex:1;min-height:0;overflow:hidden;padding:14px var(--pad) 0;
     display:flex;flex-direction:column;}
   .cuerpo > *{flex:0 0 auto;}
+  #opciones{flex:0 1 auto;min-height:0;overflow:hidden;}
 
   .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);}
   h1{font-size:27px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:3px 0 0;}
@@ -114,8 +115,10 @@
     font-size:14px;font-weight:800;}
   .jornada[aria-pressed="true"] .num{background:var(--amarillo);border-color:var(--amarillo);}
   .jornada .cuerpo{flex:1;min-width:0;}
-  .jornada .tit{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
-  .jornada .gs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+  .jornada .tit{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .jornada .gs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;
+    max-height:44px;overflow:hidden;}
   .jornada .gs span{font-size:11px;font-weight:600;color:var(--ink2);background:var(--cream);
     border:1px solid var(--line);border-radius:6px;padding:2px 7px;}
   .jornada .cuando{display:block;font-size:11px;color:var(--dim);margin-top:5px;}
@@ -190,7 +193,7 @@
   .lista .sr{font-size:14px;font-weight:700;}
   .tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 7px;
     border-radius:5px;background:rgba(181,113,58,.12);color:var(--tierra);margin-left:7px;vertical-align:1px;}
-  .racha{display:flex;gap:6px;margin-top:auto;margin-bottom:6px;align-items:center;}
+  .racha{display:flex;gap:6px;margin-top:auto;margin-bottom:4px;align-items:center;flex:0 0 auto;}
   .punto{width:22px;height:22px;border-radius:7px;background:var(--paper);border:1px solid var(--line);}
   .punto.hecho{background:var(--amarillo2);border-color:var(--amarillo2);}
 
@@ -295,7 +298,7 @@
   .escala button[aria-pressed="true"] span{color:rgba(43,43,41,.7);}
 
   /* ---------- historial ---------- */
-  .filaEj{display:flex;gap:8px;margin-top:10px;}
+  .filaEj{display:flex;gap:8px;margin-bottom:10px;}
   .verEj{flex:1;background:none;border:1px dashed var(--line);
     color:var(--ink2);border-radius:12px;padding:11px;font-family:inherit;
     font-size:13.5px;font-weight:600;cursor:pointer;}
@@ -365,14 +368,15 @@
       <p class="muted" id="regionDia" style="margin:12px 0 0;font-size:13px"></p>
       <div id="opciones"></div>
 
+      <div class="racha" id="racha"></div>
+    </div>
+    <div class="pie">
       <div class="filaEj">
         <button class="verEj" data-hoja="ejercicios" id="btnVerEj">Ver los ejercicios</button>
         <button class="masEj" data-hoja="agregar" aria-label="Agregar un ejercicio">+</button>
       </div>
-
-      <div class="racha" id="racha"></div>
+      <button class="cta" id="btnEmpezar">Empezar</button>
     </div>
-    <div class="pie"><button class="cta" id="btnEmpezar">Empezar</button></div>
 
     <div class="hoja" id="hoja-ejercicios">
       <div class="asa"></div>

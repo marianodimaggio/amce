@@ -375,7 +375,7 @@ const DIAS = [
 
   { n:1, region:'Piernas', resumen:'Cuádriceps, femorales y gemelos', opciones:[
 
-    { id:'piernas-maquinas', titulo:'Piernas en máquinas',
+    { id:'piernas-maquinas', titulo:'En máquinas',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
       { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
       { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
@@ -386,7 +386,7 @@ const DIAS = [
       { id:'Seated_Calf_Raise', series:3, reps:12, alts:['Standing_Calf_Raises','Calf_Press_On_The_Leg_Press_Machine'] }
     ]},
 
-    { id:'piernas-libres', titulo:'Piernas con peso libre',
+    { id:'piernas-libres', titulo:'Con peso libre',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
       { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
       { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
@@ -397,7 +397,7 @@ const DIAS = [
       { id:'Standing_Dumbbell_Calf_Raise', series:3, reps:12, alts:['Standing_Calf_Raises','Seated_Calf_Raise'] }
     ]},
 
-    { id:'piernas-unilateral', titulo:'Piernas pierna por pierna',
+    { id:'piernas-unilateral', titulo:'Pierna por pierna',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
       { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
       { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
@@ -411,7 +411,7 @@ const DIAS = [
 
   { n:2, region:'Tren superior', resumen:'Hombro, bíceps, tríceps, pecho y espalda', opciones:[
 
-    { id:'superior-mancuernas', titulo:'Tren superior con mancuernas',
+    { id:'superior-mancuernas', titulo:'Con mancuernas',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
       { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
       { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
@@ -422,7 +422,7 @@ const DIAS = [
       { id:'Lying_Triceps_Press', series:3, reps:10, alts:['Triceps_Pushdown'] }
     ]},
 
-    { id:'superior-poleas', titulo:'Tren superior en poleas',
+    { id:'superior-poleas', titulo:'En poleas',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
       { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
       { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
@@ -433,7 +433,7 @@ const DIAS = [
       { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] }
     ]},
 
-    { id:'superior-mixto', titulo:'Tren superior mixto',
+    { id:'superior-mixto', titulo:'Mixto',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
       { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
       { id:'Air_Bike', series:3, reps:15, alts:['Crunches','Plank'] },
@@ -447,7 +447,7 @@ const DIAS = [
 
   { n:3, region:'Abdomen y glúteo', resumen:'Abdomen, glúteo, aductores y abductores', opciones:[
 
-    { id:'abdomen-gluteo-maquinas', titulo:'Abdomen y glúteo en máquinas',
+    { id:'abdomen-gluteo-maquinas', titulo:'En máquinas',
       grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
       { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
       { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
@@ -458,7 +458,7 @@ const DIAS = [
       { id:'Thigh_Abductor', series:3, reps:12, alts:['Glute_Kickback'] }
     ]},
 
-    { id:'abdomen-gluteo-piso', titulo:'Abdomen y glúteo en colchoneta',
+    { id:'abdomen-gluteo-piso', titulo:'En colchoneta',
       grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
       { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
       { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
@@ -469,7 +469,7 @@ const DIAS = [
       { id:'Thigh_Abductor', series:3, reps:12, alts:['Glute_Kickback'] }
     ]},
 
-    { id:'abdomen-gluteo-completo', titulo:'Abdomen y glúteo completo',
+    { id:'abdomen-gluteo-completo', titulo:'Completo',
       grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
       { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
       { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
