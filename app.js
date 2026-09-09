@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '22';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '24';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -190,15 +190,17 @@ function pintarDias() {
 
 function pintarOpciones() {
   const ops = DIAS[diaVisto].opciones;
-  $('#opciones').innerHTML = ops.map((o, k) =>
-    '<button class="jornada" data-opcion="' + k + '" aria-pressed="' + (k === opcionElegida) + '">' +
+  $('#opciones').innerHTML = ops.map((o, k) => {
+    const cuantos = ejerciciosDe(o).length;
+    return '<button class="jornada" data-opcion="' + k + '" aria-pressed="' + (k === opcionElegida) + '">' +
       '<span class="num">' + (k + 1) + '</span>' +
       '<span class="cuerpo">' +
         '<span class="tit">' + o.titulo + '</span>' +
         '<span class="gs">' + o.grupos.map(g => '<span>' + g + '</span>').join('') + '</span>' +
-        '<span class="cuando">' + haceCuanto(ultimaVez(o.id)) + '</span>' +
+        '<span class="cuando">' + cuantos + ' ejercicios · ' + haceCuanto(ultimaVez(o.id)) + '</span>' +
       '</span>' +
-    '</button>').join('');
+    '</button>';
+  }).join('');
 }
 
 function pintarListaEjercicios() {
