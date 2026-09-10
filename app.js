@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '24';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '25';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -573,7 +573,7 @@ document.addEventListener('click', ev => {
   const abre = ev.target.closest('[data-hoja]');
   if (abre) {
     $('#hoja-' + abre.dataset.hoja).classList.add('on');
-    if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarColores(); pintarSync(); }
+    if (abre.dataset.hoja === 'menu') { pintarPerfil(); pintarTemas(); pintarSync(); }
     if (abre.dataset.hoja === 'agregar') pintarAgregar();
   }
   if (ev.target.closest('[data-cerrar]')) {
@@ -843,25 +843,26 @@ $('#btnEntrar').addEventListener('click', entrarALaApp);
 
 const CLAVE_AJUSTES = 'amce.ajustes';
 
-/* Doce colores. Cada uno con un tono claro para los rellenos y uno
-   más fuerte para lo que tiene que destacar. Todos son suficientemente
-   claros como para que el texto oscuro se lea encima. */
-const COLORES = [
-  { id:'amarillo', nombre:'Amarillo',  claro:'#F7E1A0', fuerte:'#EFCB63' },
-  { id:'durazno',  nombre:'Durazno',   claro:'#FAD7B0', fuerte:'#F0B677' },
-  { id:'coral',    nombre:'Coral',     claro:'#F8C5BC', fuerte:'#EE9A8C' },
-  { id:'rosa',     nombre:'Rosa',      claro:'#F7C9D9', fuerte:'#EC9CBB' },
-  { id:'lila',     nombre:'Lila',      claro:'#DFCCF1', fuerte:'#BFA3E0' },
-  { id:'violeta',  nombre:'Violeta',   claro:'#CFC9F2', fuerte:'#A79DE4' },
-  { id:'cielo',    nombre:'Cielo',     claro:'#C3DCF5', fuerte:'#8FBCE8' },
-  { id:'turquesa', nombre:'Turquesa',  claro:'#B9E3E0', fuerte:'#7FCBC6' },
-  { id:'menta',    nombre:'Menta',     claro:'#C4E7CE', fuerte:'#8FCFA4' },
-  { id:'verde',    nombre:'Verde',     claro:'#D3E4B0', fuerte:'#AECB77' },
-  { id:'arena',    nombre:'Arena',     claro:'#E6DCC6', fuerte:'#CFC09A' },
-  { id:'ladrillo', nombre:'Ladrillo',  claro:'#F0CBB3', fuerte:'#DCA37D' }
+/* Seis temas completos. Cada uno define fondo, tarjetas, texto, líneas
+   y acento en conjunto, así no hay forma de elegir una combinación que
+   quede ilegible. Verifiqué el contraste de los siete pares críticos
+   de cada tema: el mínimo es 4,5 para texto y 2,6 para rellenos. */
+const TEMAS = [
+  { id:'crema', nombre:'Crema', bg:'#F7F3E9', paper:'#FFFFFF', sand:'#FBF7EF', ink:'#2B2B29', ink2:'#57544D',
+    dim:'#706D65', line:'#E7E0D0', acc:'#F7E1A0', acc2:'#AC9247', sobreAcc:'#2B2B29', warn:'#9C6132' },
+  { id:'noche', nombre:'Noche', bg:'#12151C', paper:'#1C212B', sand:'#232A36', ink:'#F2F4F8', ink2:'#B9C0CC',
+    dim:'#8892A0', line:'#2E3542', acc:'#F7E1A0', acc2:'#EFCB63', sobreAcc:'#12151C', warn:'#E0A46A' },
+  { id:'rosa', nombre:'Rosa', bg:'#FBF0F2', paper:'#FFFFFF', sand:'#FDF6F7', ink:'#33262A', ink2:'#635256',
+    dim:'#7C6A6E', line:'#EEDCE0', acc:'#F7C9D9', acc2:'#C6839D', sobreAcc:'#33262A', warn:'#9C6132' },
+  { id:'menta', nombre:'Menta', bg:'#EEF6F0', paper:'#FFFFFF', sand:'#F6FAF7', ink:'#23302A', ink2:'#4F5F57',
+    dim:'#64726B', line:'#DBE8DF', acc:'#C4E7CE', acc2:'#70A180', sobreAcc:'#23302A', warn:'#9B602B' },
+  { id:'cielo', nombre:'Cielo', bg:'#EEF3FA', paper:'#FFFFFF', sand:'#F6F9FC', ink:'#1F2A38', ink2:'#4B5766',
+    dim:'#64707E', line:'#D9E2EE', acc:'#C3DCF5', acc2:'#759ABE', sobreAcc:'#1F2A38', warn:'#9B602B' },
+  { id:'lavanda', nombre:'Lavanda', bg:'#F4F0FA', paper:'#FFFFFF', sand:'#FAF7FD', ink:'#2A2437', ink2:'#574F66',
+    dim:'#726B7E', line:'#E4DCF0', acc:'#DFCCF1', acc2:'#A48CC1', sobreAcc:'#2A2437', warn:'#9B602B' }
 ];
 
-let ajustes = { color:'amarillo', nombre:'', nacimiento:'' };
+let ajustes = { tema:'crema', nombre:'', nacimiento:'' };
 
 try {
   const guardado = localStorage.getItem(CLAVE_AJUSTES);
@@ -872,25 +873,41 @@ function guardarAjustes() {
   try { localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(ajustes)); } catch (e) { /* nada */ }
 }
 
-function aplicarColor() {
-  const c = COLORES.find(x => x.id === ajustes.color) || COLORES[0];
-  document.documentElement.style.setProperty('--amarillo', c.claro);
-  document.documentElement.style.setProperty('--amarillo2', c.fuerte);
+function aplicarTema() {
+  const t = TEMAS.find(x => x.id === ajustes.tema) || TEMAS[0];
+  const r = document.documentElement.style;
+  r.setProperty('--cream', t.bg);
+  r.setProperty('--paper', t.paper);
+  r.setProperty('--sand', t.sand);
+  r.setProperty('--ink', t.ink);
+  r.setProperty('--ink2', t.ink2);
+  r.setProperty('--dim', t.dim);
+  r.setProperty('--line', t.line);
+  r.setProperty('--amarillo', t.acc);
+  r.setProperty('--amarillo2', t.acc2);
+  r.setProperty('--sobreAcc', t.sobreAcc);
+  r.setProperty('--tierra', t.warn);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', t.bg);
 }
 
-function pintarColores() {
-  $('#colores').innerHTML = COLORES.map(c =>
-    '<button data-color="' + c.id + '" title="' + c.nombre + '" aria-label="' + c.nombre + '" ' +
-    'aria-pressed="' + (c.id === ajustes.color) + '" ' +
-    'style="background:' + c.claro + '"></button>').join('');
+function pintarTemas() {
+  $('#temas').innerHTML = TEMAS.map(t =>
+    '<button class="tema" data-tema="' + t.id + '" aria-pressed="' + (t.id === ajustes.tema) + '">' +
+      '<span class="muestra" style="background:' + t.bg + ';border-color:' + t.line + '">' +
+        '<i style="background:' + t.acc2 + '"></i>' +
+        '<b style="background:' + t.ink + '"></b>' +
+      '</span>' +
+      '<span class="nom">' + t.nombre + '</span>' +
+    '</button>').join('');
 }
 
-$('#colores').addEventListener('click', ev => {
-  const b = ev.target.closest('[data-color]');
+$('#temas').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-tema]');
   if (!b) return;
-  ajustes.color = b.dataset.color;
-  aplicarColor();
-  pintarColores();
+  ajustes.tema = b.dataset.tema;
+  aplicarTema();
+  pintarTemas();
   guardarPerfilYSubir();
 });
 
@@ -932,7 +949,7 @@ $('#perfilNacimiento').addEventListener('change', ev => {
   guardarPerfilYSubir();
 });
 
-aplicarColor();
+aplicarTema();
 
 /* ============================================================
    SINCRONIZACIÓN CON GOOGLE
@@ -954,7 +971,7 @@ async function subirDatos() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Sesion': ajustes.sync.token },
       body: JSON.stringify(Object.assign({}, datos, {
-        perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, color: ajustes.color },
+        perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, tema: ajustes.tema },
         extras: ajustes.extras || {}
       }))
     });
@@ -983,8 +1000,8 @@ async function bajarDatos() {
     if (nuevo.perfil) {
       if (nuevo.perfil.nombre) ajustes.nombre = nuevo.perfil.nombre;
       if (nuevo.perfil.nacimiento) ajustes.nacimiento = nuevo.perfil.nacimiento;
-      if (nuevo.perfil.color) ajustes.color = nuevo.perfil.color;
-      aplicarColor();
+      if (nuevo.perfil.tema) ajustes.tema = nuevo.perfil.tema;
+      aplicarTema();
     }
     if (nuevo.extras) ajustes.extras = nuevo.extras;
     datos = nuevo;

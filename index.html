@@ -35,7 +35,7 @@
   :root{
     --cream:#F7F3E9; --paper:#FFFFFF; --sand:#FBF7EF;
     --ink:#2B2B29; --ink2:#57544D; --dim:#7A776E; --line:#E7E0D0;
-    --amarillo:#F7E1A0; --amarillo2:#EFCB63; --tierra:#B5713A;
+    --amarillo:#F7E1A0; --amarillo2:#EFCB63; --tierra:#B5713A; --sobreAcc:#2B2B29;
     --pad:14px; --r:18px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -93,7 +93,7 @@
   .semanas button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink2);
     border-radius:12px;padding:11px 4px;font-family:inherit;font-size:13px;font-weight:600;
     cursor:pointer;position:relative;}
-  .semanas button.hecho{background:var(--amarillo);border-color:var(--amarillo2);color:var(--ink);}
+  .semanas button.hecho{background:var(--amarillo);border-color:var(--amarillo2);color:var(--sobreAcc);}
   .semanas button.hecho[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream);}
   .tildeDia{position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%;
     background:var(--ink);display:block;}
@@ -161,13 +161,15 @@
     font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline;}
   #botonGoogle{display:flex;justify-content:center;}
 
-  .colores{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px;}
-  .colores button{aspect-ratio:1/1;border-radius:50%;border:2px solid transparent;
-    cursor:pointer;padding:0;position:relative;}
-  .colores button[aria-pressed="true"]{border-color:var(--ink);}
-  .colores button[aria-pressed="true"]::after{content:'';position:absolute;
-    left:50%;top:50%;width:6px;height:11px;margin:-8px 0 0 -3px;
-    border:2.5px solid var(--ink);border-top:0;border-left:0;transform:rotate(42deg);}
+  .temas{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px;}
+  .tema{background:none;border:1.5px solid transparent;border-radius:12px;padding:5px 5px 7px;
+    cursor:pointer;font-family:inherit;}
+  .tema[aria-pressed="true"]{border-color:var(--ink);background:var(--paper);}
+  .tema .muestra{display:flex;align-items:flex-end;justify-content:center;gap:4px;
+    height:44px;border-radius:9px;border:1px solid;padding-bottom:9px;}
+  .tema .muestra i{width:14px;height:14px;border-radius:50%;display:block;}
+  .tema .muestra b{width:22px;height:5px;border-radius:3px;display:block;}
+  .tema .nom{display:block;font-size:11px;font-weight:600;color:var(--ink2);margin-top:5px;}
 
   /* ---------- aviso sin conexión ---------- */
   #sinRed{position:absolute;left:0;right:0;top:0;z-index:70;background:var(--ink);
@@ -181,7 +183,7 @@
   .marca .sp{flex:1;}
 
   /* ---------- hoy ---------- */
-  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--amarillo);
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--amarillo);color:var(--sobreAcc);
     border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600;margin-top:14px;}
   .tarjeta{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:16px;}
   .tarjeta .split{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
@@ -215,10 +217,10 @@
   .acciones{display:flex;gap:10px;padding-top:12px;}
   .acciones button{flex:1;background:var(--paper);border:1px solid var(--line);color:var(--ink2);
     border-radius:12px;padding:11px 8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
-  .acciones button.prim{background:var(--amarillo);border-color:var(--amarillo);color:var(--ink);font-weight:700;}
+  .acciones button.prim{background:var(--amarillo);border-color:var(--amarillo);color:var(--sobreAcc);font-weight:700;}
 
-  .cardio{text-align:center;background:var(--amarillo);border-radius:var(--r);padding:22px 14px;margin-top:14px;}
-  .cardio .n{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:4px;}
+  .cardio{text-align:center;background:var(--amarillo);color:var(--sobreAcc);border-radius:var(--r);padding:22px 14px;margin-top:14px;}
+  .cardio .n{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:4px;color:var(--sobreAcc);}
 
   .series{padding:14px 0 0;}
   .series .cabLista{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
@@ -235,7 +237,7 @@
   .serie.hecha{border-left:4px solid var(--amarillo2);background:var(--sand);}
   .serie.hecha .tick{background:var(--amarillo2);border-color:var(--amarillo2);}
   .serie.hecha .tick::after{content:'';position:absolute;left:8px;top:4px;width:6px;height:11px;
-    border:2.5px solid var(--ink);border-top:0;border-left:0;transform:rotate(42deg);}
+    border:2.5px solid var(--sobreAcc);border-top:0;border-left:0;transform:rotate(42deg);}
   .serie.pend{opacity:.45;}
   .serie.act{border-color:var(--ink);border-width:1.5px;}
   .serie .cuerpo{display:none;padding:0 14px 14px;}
@@ -295,8 +297,8 @@
     border-radius:14px;padding:13px 4px;font-family:inherit;font-weight:700;cursor:pointer;}
   .escala button b{display:block;font-size:22px;font-weight:800;}
   .escala button span{font-size:11px;font-weight:500;color:var(--dim);}
-  .escala button[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo2);}
-  .escala button[aria-pressed="true"] span{color:rgba(43,43,41,.7);}
+  .escala button[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo2);color:var(--sobreAcc);}
+  .escala button[aria-pressed="true"] span{color:var(--sobreAcc);opacity:.7;}
 
   /* ---------- historial ---------- */
   .filaEj{display:flex;gap:8px;margin-bottom:10px;}
@@ -304,7 +306,7 @@
     color:var(--ink2);border-radius:12px;padding:11px;font-family:inherit;
     font-size:13.5px;font-weight:600;cursor:pointer;}
   .masEj{flex:0 0 46px;width:46px;background:var(--amarillo);border:none;border-radius:12px;
-    color:var(--ink);font-family:inherit;font-size:24px;font-weight:600;line-height:1;
+    color:var(--sobreAcc);font-family:inherit;font-size:24px;font-weight:600;line-height:1;
     cursor:pointer;padding:0;}
   .cabHoja{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
   .cabHoja .masEj{flex:0 0 40px;width:40px;height:40px;font-size:22px;}
@@ -421,8 +423,8 @@
         </label>
         <p class="muted" id="perfilEdad" style="font-size:13px;margin:6px 0 0"></p>
 
-        <span class="eyebrow" style="display:block;margin-top:22px">Color</span>
-        <div class="colores" id="colores"></div>
+        <span class="eyebrow" style="display:block;margin-top:22px">Tema</span>
+        <div class="temas" id="temas"></div>
 
         <div id="bloqueSync" style="display:none">
           <span class="eyebrow" style="display:block;margin-top:22px">Tu cuenta</span>
