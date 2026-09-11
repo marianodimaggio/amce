@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '25';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '26';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -139,10 +139,9 @@ let nDia = null;     // número de día de esa rutina
 let plan = [];       // ejercicios de la sesión, ya resueltos contra el catálogo
 let i = 0;           // ejercicio actual
 
-function armarPlan(d) {
-  return ejerciciosDe(d).map(item => {
-    const cat = CATALOGO[item.id];
-    return {
+function armarEjercicio(item) {
+  const cat = CATALOGO[item.id];
+  return {
       id: item.id,
       nombre: cat.nombre,
       slot: cat.slot,
@@ -154,12 +153,15 @@ function armarPlan(d) {
       minutos: item.minutos || null,
       objetivoSeries: item.series || null,
       objetivoReps: item.reps || null,
-      series: item.series
-        ? Array.from({ length: item.series },
-            () => ({ peso: cat.carga ? (ultimoPeso(item.id) || 1) : null, reps: item.reps, hecha: false }))
-        : null
-    };
-  });
+    series: item.series
+      ? Array.from({ length: item.series },
+          () => ({ peso: cat.carga ? (ultimoPeso(item.id) || 1) : null, reps: item.reps, hecha: false }))
+      : null
+  };
+}
+
+function armarPlan(d) {
+  return ejerciciosDe(d).map(armarEjercicio);
 }
 
 /* ---------- navegación ---------- */
@@ -317,8 +319,10 @@ function pintarAgregar() {
     '<button data-grupo="' + n + '" aria-pressed="' + (n === grupoElegido) + '">' +
     n.charAt(0) + n.slice(1).toLowerCase() + '</button>').join('');
 
+  const enSesion = $('#ejercicio').classList.contains('on');
   const rutina = DIAS[diaVisto].opciones[opcionElegida];
-  const yaEstan = ejerciciosDe(rutina).map(e => e.id);
+  // dentro de la sesión hay que comparar contra el plan en curso
+  const yaEstan = enSesion ? plan.map(e => e.id) : ejerciciosDe(rutina).map(e => e.id);
 
   $('#listaAgregar').innerHTML = grupos[grupoElegido].map(id => {
     const c = CATALOGO[id];
@@ -339,13 +343,30 @@ $('#gruposAgregar').addEventListener('click', ev => {
   pintarAgregar();
 });
 
+/* La rutina que se está haciendo, no la que se está mirando en la home. */
+function rutinaEnCurso() {
+  return rutina || DIAS[diaVisto].opciones[opcionElegida];
+}
+
 $('#listaAgregar').addEventListener('click', ev => {
   const b = ev.target.closest('[data-sumar]');
   if (!b || b.disabled) return;
-  const rutina = DIAS[diaVisto].opciones[opcionElegida];
-  agregarExtra(rutina.id, b.dataset.sumar);
+  const id = b.dataset.sumar;
+  const enSesion = $('#ejercicio').classList.contains('on');
+  const laRutina = enSesion ? rutinaEnCurso() : DIAS[diaVisto].opciones[opcionElegida];
+
+  agregarExtra(laRutina.id, id);
   $('#hoja-agregar').classList.remove('on');
-  pintarListaEjercicios();
+
+  if (enSesion) {
+    // se suma al final de la sesión y no donde está parada: si lo pusiera
+    // en el medio, el contador y la barra saltarían hacia atrás
+    const c = CATALOGO[id];
+    plan.push(armarEjercicio({ id, series: 3, reps: c.tiempo ? 20 : 10, extra: true }));
+    pintarEjercicio();
+  } else {
+    pintarListaEjercicios();
+  }
 });
 
 $('#listaHoy').addEventListener('click', ev => {
