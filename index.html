@@ -73,6 +73,9 @@
   .barraSup{display:flex;align-items:center;justify-content:space-between;padding:16px var(--pad) 0;}
   .link{background:none;border:none;color:var(--ink2);font-family:inherit;font-size:14px;
     font-weight:600;padding:6px 0;cursor:pointer;}
+  .masChico{width:32px;height:32px;flex:0 0 32px;background:var(--amarillo);border:none;
+    border-radius:9px;color:var(--sobreAcc);font-family:inherit;font-size:19px;font-weight:600;
+    line-height:1;cursor:pointer;padding:0;}
 
   /* ---------- marca ---------- */
   /* ---------- portada ---------- */
@@ -453,6 +456,7 @@
     <div class="barraSup">
       <button class="link" id="btnAtras">← Atrás</button>
       <span class="eyebrow" id="contador"></span>
+      <button class="masChico" data-hoja="agregar" aria-label="Agregar un ejercicio">+</button>
     </div>
     <div class="barra" id="barra"></div>
 
