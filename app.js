@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '26';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '27';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
