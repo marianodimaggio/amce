@@ -267,6 +267,276 @@ const CATALOGO = {
     'Abdomen firme para no arquear la espalda.',
     'Estirá completo sin trabar el codo.'] },
 
+  // ---------- ampliación del catálogo ----------
+  Hack_Squat: { nombre:'Sentadilla hack', slot:'CUÁDRICEPS', carga:true, claves:[
+    'Espalda y cadera bien apoyadas en el respaldo.',
+    'Bajá hasta que el muslo quede paralelo, no más.',
+    'Rodillas en línea con los pies, sin dejarlas caer hacia adentro.'] },
+  Narrow_Stance_Leg_Press: { nombre:'Prensa con pies juntos', slot:'CUÁDRICEPS', carga:true, claves:[
+    'Los pies juntos y bajos en la plataforma.',
+    'La cola queda apoyada: si se despega, bajaste demasiado.',
+    'No trabes las rodillas al estirar.'] },
+  'Single-Leg_Leg_Extension': { nombre:'Extensión a una pierna', slot:'CUÁDRICEPS', carga:true, claves:[
+    'Una pierna por vez, mismo número de cada lado.',
+    'Estirá completo arriba y bajá despacio.',
+    'Espalda apoyada en el respaldo.'] },
+  Goblet_Squat: { nombre:'Sentadilla goblet', slot:'CUÁDRICEPS', carga:true, claves:[
+    'La pesa contra el pecho, codos hacia abajo.',
+    'Cadera hacia atrás y pecho arriba.',
+    'Bajá hasta donde puedas sin redondear la espalda.'] },
+  Smith_Machine_Squat: { nombre:'Sentadilla en multipower', slot:'CUÁDRICEPS', carga:true, lumbar:true, claves:[
+    'La barra apoyada en los hombros, no en el cuello.',
+    'Abdomen firme y espalda recta todo el movimiento.',
+    'Si sentís la zona baja, bajá el peso o cambiá de ejercicio.'] },
+  Chair_Squat: { nombre:'Sentadilla a la silla', slot:'CUÁDRICEPS', carga:false, claves:[
+    'Bajá hasta tocar apenas la silla y volvé a subir.',
+    'Cadera hacia atrás, como si te fueras a sentar.',
+    'Sin dejarte caer de golpe.'] },
+  Narrow_Stance_Hack_Squats: { nombre:'Hack con pies juntos', slot:'CUÁDRICEPS', carga:true, claves:[
+    'Pies juntos y bajos en la plataforma.',
+    'Espalda pegada al respaldo.',
+    'Recorrido controlado, sin rebotar abajo.'] },
+  Reverse_Hyperextension: { nombre:'Hiperextensión inversa', slot:'FEMORALES', carga:true, lumbar:true, claves:[
+    'El torso bien apoyado, sin arquear la espalda al subir.',
+    'Subí las piernas sólo hasta la línea del cuerpo.',
+    'Movimiento lento, sin impulso.'] },
+  Seated_Band_Hamstring_Curl: { nombre:'Femoral sentada con banda', slot:'FEMORALES', carga:false, claves:[
+    'La banda en los tobillos, bien anclada.',
+    'Flexioná la rodilla llevando el talón hacia atrás.',
+    'Volvé despacio sin soltar la tensión.'] },
+  Platform_Hamstring_Slides: { nombre:'Deslizamientos de femoral', slot:'FEMORALES', carga:false, claves:[
+    'Cadera arriba todo el movimiento.',
+    'Estirá las piernas despacio y traelas de vuelta.',
+    'Si la cadera se hunde, cortá la serie.'] },
+  'Stiff-Legged_Dumbbell_Deadlift': { nombre:'Peso muerto piernas rectas', slot:'FEMORALES', carga:true, lumbar:true, claves:[
+    'Espalda recta: nunca la redondees.',
+    'La cadera va hacia atrás, no te agachás.',
+    'Bajá sólo hasta donde la espalda siga recta.'] },
+  Smith_Machine_Calf_Raise: { nombre:'Gemelos en multipower', slot:'GEMELO', carga:true, claves:[
+    'Sólo la punta del pie en el escalón.',
+    'Subí completo y bajá el talón por debajo.',
+    'Movimiento lento, sin rebotar.'] },
+  Barbell_Seated_Calf_Raise: { nombre:'Gemelos sentada con barra', slot:'GEMELO', carga:true, claves:[
+    'La barra apoyada sobre la rodilla, con almohadilla.',
+    'Recorrido completo, arriba y abajo.',
+    'Sin rebotar en la parte baja.'] },
+  Smith_Machine_Reverse_Calf_Raises: { nombre:'Tibiales en multipower', slot:'GEMELO', carga:true, claves:[
+    'Los talones apoyados y la punta libre.',
+    'Subí la punta del pie hacia vos.',
+    'Poco peso: es un músculo chico.'] },
+  Pull_Through: { nombre:'Pull through en polea', slot:'GLÚTEO', carga:true, lumbar:true, claves:[
+    'La soga entre las piernas, de espaldas a la polea.',
+    'La cadera va hacia atrás y vuelve apretando el glúteo.',
+    'Espalda recta todo el movimiento.'] },
+  Leg_Lift: { nombre:'Elevación de pierna', slot:'GLÚTEO', carga:false, claves:[
+    'En cuatro apoyos, espalda recta.',
+    'Subí la pierna hasta la altura de la cadera, no más.',
+    'Mismo número de cada lado.'] },
+  Hip_Circles_prone: { nombre:'Círculos de cadera en el piso', slot:'GLÚTEO MEDIO', carga:false, claves:[
+    'En cuatro apoyos, espalda quieta.',
+    'Movimiento amplio pero controlado.',
+    'Mismo número de cada lado.'] },
+  Groiners: { nombre:'Aperturas de cadera', slot:'ADUCTOR', carga:false, claves:[
+    'Desde posición de plancha, llevá el pie al lado de la mano.',
+    'Movimiento lento, sin rebotes.',
+    'Alterná los lados.'] },
+  Pallof_Press: { nombre:'Press Pallof', slot:'ABDOMEN', carga:true, claves:[
+    'De costado a la polea, brazos al pecho.',
+    'Estirá los brazos sin dejar que el torso gire.',
+    'Lo que trabaja es aguantar el giro, no moverse.'] },
+  Rope_Crunch: { nombre:'Abdominales con soga', slot:'ABDOMEN', carga:true, claves:[
+    'De rodillas, la soga al costado de la cara.',
+    'Bajá redondeando el abdomen, no tirando con los brazos.',
+    'La cadera queda quieta.'] },
+  Dead_Bug: { nombre:'Bicho muerto', slot:'ABDOMEN', carga:false, claves:[
+    'La zona baja de la espalda pegada al piso todo el tiempo.',
+    'Estirá brazo y pierna contrarios, despacio.',
+    'Si la espalda se despega, achicá el recorrido.'] },
+  Side_Jackknife: { nombre:'Abdominales laterales', slot:'ABDOMEN', carga:false, claves:[
+    'Acostada de lado, subí tronco y pierna a la vez.',
+    'Movimiento corto y controlado.',
+    'Mismo número de cada lado.'] },
+  Dumbbell_Side_Bend: { nombre:'Inclinación lateral', slot:'ABDOMEN', carga:true, lumbar:true, claves:[
+    'Una sola mancuerna, del lado que trabaja.',
+    'Bajá al costado sin inclinarte adelante ni atrás.',
+    'Si molesta la zona baja, dejá este ejercicio.'] },
+  Pallof_Press_With_Rotation: { nombre:'Press Pallof con giro', slot:'ZONA MEDIA', carga:true, claves:[
+    'Estirá los brazos y recién ahí girá.',
+    'La cadera queda mirando al frente.',
+    'Movimiento lento en los dos sentidos.'] },
+  'Butt-Ups': { nombre:'Plancha con elevación', slot:'ZONA MEDIA', carga:false, claves:[
+    'Desde la plancha, subí la cadera y volvé.',
+    'Sin dejar caer la zona baja al volver.',
+    'Movimiento corto y controlado.'] },
+  Machine_Bench_Press: { nombre:'Press de pecho en máquina', slot:'EMPUJE HORIZONTAL', carga:true, claves:[
+    'Espalda apoyada en el respaldo.',
+    'Los manubrios a la altura del pecho.',
+    'Estirá sin trabar los codos.'] },
+  Leverage_Chest_Press: { nombre:'Press de pecho con palancas', slot:'EMPUJE HORIZONTAL', carga:true, claves:[
+    'Espalda y hombros apoyados.',
+    'Empujá parejo con los dos brazos.',
+    'Volvé despacio sin soltar la tensión.'] },
+  Smith_Machine_Bench_Press: { nombre:'Press de pecho en multipower', slot:'EMPUJE HORIZONTAL', carga:true, claves:[
+    'Pies apoyados y espalda contra el banco.',
+    'Bajá la barra al medio del pecho.',
+    'Usá los seguros de la máquina.'] },
+  'Push-Ups_With_Feet_Elevated': { nombre:'Flexiones con pies elevados', slot:'EMPUJE HORIZONTAL', carga:false, claves:[
+    'Cuerpo en línea recta, sin hundir la cadera.',
+    'Codos a 45 grados del cuerpo.',
+    'Bajá hasta donde puedas manteniendo la línea.'] },
+  'Incline_Push-Up': { nombre:'Flexiones inclinadas', slot:'EMPUJE HORIZONTAL', carga:false, claves:[
+    'Las manos en un banco o barra a la altura de la cadera.',
+    'Cuerpo en línea recta de la cabeza a los pies.',
+    'Cuanto más alto el apoyo, más fácil.'] },
+  Leverage_Shoulder_Press: { nombre:'Hombros con palancas', slot:'EMPUJE VERTICAL', carga:true, claves:[
+    'Espalda bien apoyada en el respaldo.',
+    'Subí sin encoger los hombros.',
+    'Bajá controlando hasta la altura de la oreja.'] },
+  Cable_Shoulder_Press: { nombre:'Hombros en polea', slot:'EMPUJE VERTICAL', carga:true, claves:[
+    'Abdomen firme para no arquear la espalda.',
+    'Subí en línea con los hombros.',
+    'Recorrido completo y controlado.'] },
+  Seated_Cable_Shoulder_Press: { nombre:'Hombros sentada en polea', slot:'EMPUJE VERTICAL', carga:true, claves:[
+    'Espalda apoyada, pies firmes en el piso.',
+    'Subí sin trabar los codos.',
+    'Bajá contando hasta dos.'] },
+  Smith_Machine_Overhead_Shoulder_Press: { nombre:'Hombros en multipower', slot:'EMPUJE VERTICAL', carga:true, claves:[
+    'La barra al frente, no detrás de la nuca.',
+    'Abdomen firme para no arquear la espalda.',
+    'Bajá hasta la altura del mentón.'] },
+  Cuban_Press: { nombre:'Press cubano', slot:'EMPUJE VERTICAL', carga:true, claves:[
+    'Codos a la altura del hombro todo el movimiento.',
+    'Primero rotás, después empujás.',
+    'Poco peso: es un ejercicio de control, no de fuerza.'] },
+  Cable_Seated_Lateral_Raise: { nombre:'Vuelos sentada en polea', slot:'HOMBRO LATERAL', carga:true, claves:[
+    'Codos apenas flexionados y fijos.',
+    'Subí hasta la altura del hombro, no más.',
+    'Sin balancear el torso.'] },
+  Front_Cable_Raise: { nombre:'Elevación frontal en polea', slot:'HOMBRO LATERAL', carga:true, claves:[
+    'Subí hasta la altura del hombro.',
+    'El torso queda quieto.',
+    'Volvé despacio sin soltar la tensión.'] },
+  'Standing_Low-Pulley_Deltoid_Raise': { nombre:'Vuelo en polea baja', slot:'HOMBRO LATERAL', carga:true, claves:[
+    'Un brazo por vez, el otro sujeta la máquina.',
+    'Subí al costado hasta la altura del hombro.',
+    'Mismo número de cada lado.'] },
+  'Cable_Rope_Rear-Delt_Rows': { nombre:'Hombro posterior con soga', slot:'HOMBRO LATERAL', carga:true, claves:[
+    'Codos altos, la soga hacia la cara.',
+    'Juntá los omóplatos al final.',
+    'Poco peso y movimiento lento.'] },
+  Machine_Triceps_Extension: { nombre:'Tríceps en máquina', slot:'TRÍCEPS', carga:true, claves:[
+    'Espalda apoyada en el respaldo.',
+    'Estirá completo sin trabar el codo.',
+    'Volvé despacio sin soltar la tensión.'] },
+  Dip_Machine: { nombre:'Fondos en máquina', slot:'TRÍCEPS', carga:true, claves:[
+    'Torso derecho, hombros abajo.',
+    'Bajá hasta que el codo quede en ángulo recto.',
+    'Si molesta el hombro, bajá menos.'] },
+  Low_Cable_Triceps_Extension: { nombre:'Tríceps en polea baja', slot:'TRÍCEPS', carga:true, claves:[
+    'Codos pegados al cuerpo, sin moverlos.',
+    'Estirá completo y volvé controlando.',
+    'El torso queda firme.'] },
+  Cable_Lying_Triceps_Extension: { nombre:'Tríceps acostada en polea', slot:'TRÍCEPS', carga:true, claves:[
+    'Los codos quietos, apuntando al techo.',
+    'Bajá hasta la frente, sin abrir los codos.',
+    'Movimiento lento en los dos sentidos.'] },
+  'Close-Grip_Dumbbell_Press': { nombre:'Press cerrado con mancuernas', slot:'TRÍCEPS', carga:true, claves:[
+    'Las mancuernas juntas sobre el pecho.',
+    'Codos pegados al cuerpo al bajar.',
+    'Estirá sin trabar los codos.'] },
+  Machine_Preacher_Curls: { nombre:'Bíceps en máquina Scott', slot:'BÍCEPS', carga:true, claves:[
+    'Los brazos bien apoyados en el respaldo.',
+    'Estirá casi completo abajo, sin trabar el codo.',
+    'Subí sin despegar los hombros.'] },
+  High_Cable_Curls: { nombre:'Bíceps en polea alta', slot:'BÍCEPS', carga:true, claves:[
+    'Brazos a la altura del hombro, codos fijos.',
+    'Llevá las manos hacia la cabeza.',
+    'Volvé despacio.'] },
+  Lying_Cable_Curl: { nombre:'Bíceps acostada en polea', slot:'BÍCEPS', carga:true, claves:[
+    'Espalda apoyada en el piso o el banco.',
+    'Los codos quedan quietos.',
+    'Recorrido completo y controlado.'] },
+  Reverse_Cable_Curl: { nombre:'Bíceps invertido en polea', slot:'BÍCEPS', carga:true, claves:[
+    'Palmas hacia abajo todo el movimiento.',
+    'Codos pegados al cuerpo.',
+    'Menos peso que en el bíceps común.'] },
+  'V-Bar_Pulldown': { nombre:'Jalón con agarre en V', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Llevá el mango al pecho, no detrás de la nuca.',
+    'Codos hacia abajo, no hacia atrás.',
+    'Volvé arriba controlando.'] },
+  'Straight-Arm_Pulldown': { nombre:'Jalón con brazos rectos', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Brazos casi estirados todo el recorrido.',
+    'El movimiento sale de la espalda, no de los codos.',
+    'Torso levemente inclinado y quieto.'] },
+  Kneeling_High_Pulley_Row: { nombre:'Remo de rodillas en polea', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'De rodillas, espalda recta.',
+    'Llevá los codos hacia atrás y abajo.',
+    'Sin balancear el torso.'] },
+  Leverage_Iso_Row: { nombre:'Remo con palancas', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Pecho apoyado en el respaldo.',
+    'Tirá con los codos, no con las manos.',
+    'Juntá los omóplatos al final.'] },
+  'Close-Grip_Front_Lat_Pulldown': { nombre:'Jalón con agarre cerrado', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Llevá el mango al pecho.',
+    'Codos pegados al cuerpo.',
+    'Volvé arriba sin soltar de golpe.'] },
+  Elevated_Cable_Rows: { nombre:'Remo en polea elevada', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Espalda recta, sin balancearte.',
+    'Llevá el mango al abdomen.',
+    'Juntá los omóplatos.'] },
+  Shotgun_Row: { nombre:'Remo a un brazo en polea', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
+    'Un brazo por vez, torso firme.',
+    'Girá apenas la mano al tirar.',
+    'Mismo número de cada lado.'] },
+  'Lying_T-Bar_Row': { nombre:'Remo T con pecho apoyado', slot:'TRACCIÓN HORIZONTAL', carga:true, claves:[
+    'Pecho apoyado: así la espalda baja no trabaja.',
+    'Tirá con los codos hacia atrás.',
+    'Juntá los omóplatos al final.'] },
+  Leverage_High_Row: { nombre:'Remo alto con palancas', slot:'TRACCIÓN HORIZONTAL', carga:true, claves:[
+    'Pecho apoyado en el respaldo.',
+    'Codos hacia atrás y abajo.',
+    'Volvé despacio.'] },
+  'One-Arm_Dumbbell_Row': { nombre:'Remo a un brazo', slot:'TRACCIÓN HORIZONTAL', carga:true, lumbar:true, claves:[
+    'Una mano y una rodilla apoyadas en el banco.',
+    'Espalda recta y paralela al piso.',
+    'Si sentís la zona baja, apoyá más el torso.'] },
+  'Seated_One-arm_Cable_Pulley_Rows': { nombre:'Remo a un brazo sentada', slot:'TRACCIÓN HORIZONTAL', carga:true, claves:[
+    'Espalda recta, sin girar el torso.',
+    'Llevá el codo hacia atrás, pegado al cuerpo.',
+    'Mismo número de cada lado.'] },
+  'T-Bar_Row_with_Handle': { nombre:'Remo T con agarre', slot:'TRACCIÓN HORIZONTAL', carga:true, lumbar:true, claves:[
+    'Espalda recta, cadera hacia atrás.',
+    'Tirá hasta el abdomen.',
+    'Si sentís la zona baja, pasá al remo con pecho apoyado.'] },
+  Incline_Bench_Pull: { nombre:'Remo en banco inclinado', slot:'TRACCIÓN HORIZONTAL', carga:true, claves:[
+    'Boca abajo sobre el banco, pecho apoyado.',
+    'Tirá con los codos hacia atrás.',
+    'La espalda baja no trabaja: por eso es el más seguro.'] },
+  Dumbbell_Step_Ups: { nombre:'Subidas al cajón con mancuernas', slot:'PIERNA UNILATERAL', carga:true, claves:[
+    'Apoyá todo el pie en el cajón.',
+    'Subí empujando con esa pierna, sin impulso de la otra.',
+    'Mismo número de cada lado.'] },
+  Split_Squat_with_Dumbbells: { nombre:'Sentadilla búlgara', slot:'PIERNA UNILATERAL', carga:true, claves:[
+    'El pie de atrás apoyado en un banco.',
+    'Bajá derecho, la rodilla de adelante sobre el pie.',
+    'Torso erguido todo el movimiento.'] },
+  'Smith_Single-Leg_Split_Squat': { nombre:'Búlgara en multipower', slot:'PIERNA UNILATERAL', carga:true, claves:[
+    'La barra en los hombros, no en el cuello.',
+    'El pie de atrás en un banco.',
+    'Bajá derecho y controlado.'] },
+  Bodyweight_Walking_Lunge: { nombre:'Estocadas caminando', slot:'PIERNA UNILATERAL', carga:false, claves:[
+    'Torso derecho, mirada al frente.',
+    'La rodilla de adelante no pasa la punta del pie.',
+    'Pasos parejos de los dos lados.'] },
+  'Single_Leg_Push-off': { nombre:'Empuje a una pierna', slot:'PIERNA UNILATERAL', carga:false, claves:[
+    'Un pie en el cajón, empujá sólo con ese.',
+    'La otra pierna acompaña, no ayuda.',
+    'Mismo número de cada lado.'] },
+  Suspended_Split_Squat: { nombre:'Búlgara en suspensión', slot:'PIERNA UNILATERAL', carga:false, claves:[
+    'El pie de atrás en la cinta, apenas apoyado.',
+    'Bajá derecho sin inclinarte adelante.',
+    'Sujetate si perdés el equilibrio.'] },
+
   // ---------- tracción ----------
   'Wide-Grip_Lat_Pulldown': { nombre:'Jalón al pecho', slot:'TRACCIÓN VERTICAL', carga:true, claves:[
     'Llevá la barra al pecho, no detrás de la nuca.',
