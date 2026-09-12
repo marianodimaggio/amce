@@ -11,9 +11,15 @@
    · Las fotos de los ejercicios: primero el guardado. No cambian
      nunca y son lo más pesado, así que una vez vistas quedan en
      el teléfono para siempre.
+
+     OJO: las fotos vienen de otro dominio. Si se piden como lo hace
+     un <img> por defecto, la respuesta llega "opaca" y el navegador
+     NO deja guardarla. Por eso las pedimos explícitamente con CORS,
+     que GitHub permite. Sin esto, las fotos se bajaban de nuevo cada
+     vez y cualquier error de red mostraba el ícono de imagen rota.
    ============================================================ */
 
-const VERSION = 'amce-v1';
+const VERSION = 'amce-v2';
 const APP = VERSION + '-app';
 const FOTOS = VERSION + '-fotos';
 
@@ -50,6 +56,39 @@ self.addEventListener('activate', ev => {
 const esFoto = url =>
   url.hostname === 'raw.githubusercontent.com' || /\.(jpg|jpeg|png|webp)$/i.test(url.pathname);
 
+/* Una imagen gris con el ícono de una foto, para cuando no se pudo
+   traer. Es mejor que el cuadrito roto del navegador. */
+const SIN_FOTO = new Response(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+  '<rect width="100" height="100" fill="#EFEBE1"/>' +
+  '<path d="M30 62l14-16 10 11 8-8 12 13z" fill="#CFC8B8"/>' +
+  '<circle cx="37" cy="38" r="6" fill="#CFC8B8"/></svg>',
+  { headers: { 'Content-Type': 'image/svg+xml' } }
+);
+
+async function traerFoto(pedido) {
+  const guardada = await caches.match(pedido);
+  if (guardada) return guardada;
+
+  try {
+    // con CORS la respuesta no es opaca y SÍ se puede guardar
+    const resp = await fetch(pedido.url, { mode: 'cors', credentials: 'omit' });
+    if (resp && resp.ok) {
+      const c = await caches.open(FOTOS);
+      await c.put(pedido, resp.clone());
+      return resp;
+    }
+  } catch (e) { /* sin red o falló: caemos al reemplazo */ }
+
+  // último intento tal cual vino, y si no, la imagen de reemplazo
+  try {
+    const directa = await fetch(pedido);
+    if (directa) return directa;
+  } catch (e) { /* nada */ }
+
+  return SIN_FOTO.clone();
+}
+
 self.addEventListener('fetch', ev => {
   if (ev.request.method !== 'GET') return;
 
@@ -65,15 +104,7 @@ self.addEventListener('fetch', ev => {
 
   // fotos de ejercicios: primero lo guardado
   if (esFoto(url)) {
-    ev.respondWith(
-      caches.match(ev.request).then(guardada => {
-        if (guardada) return guardada;
-        return fetch(ev.request).then(resp => {
-          caches.open(FOTOS).then(c => c.put(ev.request, resp.clone()));
-          return resp;
-        });
-      })
-    );
+    ev.respondWith(traerFoto(ev.request));
     return;
   }
 
