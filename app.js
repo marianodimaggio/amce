@@ -7,7 +7,7 @@
 const $  = (s, c) => (c || document).querySelector(s);
 const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
 const CLAVE = 'amce.v1';
-const VERSION_APP = '29';   // sube cada vez que cambia app.js; se muestra en el menú
+const VERSION_APP = '30';   // sube cada vez que cambia app.js; se muestra en el menú
 
 /* ---------- almacenamiento ---------- */
 
@@ -217,8 +217,9 @@ function pintarListaEjercicios() {
       : (cat.tiempo ? item.series + ' × ' + item.reps + '″' : item.series + ' × ' + item.reps);
     const clase = (item.minutos || cat.slot === 'ZONA MEDIA') ? ' class="pre"' : '';
     const tag = cat.lumbar ? '<span class="tag">LUMBAR</span>' : '';
-    const quitar = item.extra
-      ? '<button class="quitar" data-quitar="' + item.id + '" aria-label="Quitar">×</button>' : '';
+    const esCardio = cat.slot === 'CARDIO';
+    const quitar = esCardio ? ''
+      : '<button class="quitar" data-quitar="' + item.id + '" aria-label="Quitar">×</button>';
     return '<li' + clase + '><span class="idx">' + String(k + 1).padStart(2, '0') + '</span>' +
       '<span class="nm">' + cat.nombre + tag + '</span>' +
       '<span class="sr">' + meta + '</span>' + quitar + '</li>';
@@ -274,6 +275,33 @@ function extrasDe(idRutina) {
   return (ajustes.extras && ajustes.extras[idRutina]) || [];
 }
 
+function quitadosDe(idRutina) {
+  return (ajustes.quitados && ajustes.quitados[idRutina]) || [];
+}
+
+/* Sacar un ejercicio de la rutina. Si es de los que Emilia agregó, se borra
+   de la lista de agregados; si es de los originales, se anota como quitado.
+   Nunca deja la rutina sin ejercicios musculares. */
+function sacarEjercicio(idRutina, idEjercicio) {
+  if (extrasDe(idRutina).includes(idEjercicio)) {
+    quitarExtra(idRutina, idEjercicio);
+    return true;
+  }
+  if (!ajustes.quitados) ajustes.quitados = {};
+  if (!ajustes.quitados[idRutina]) ajustes.quitados[idRutina] = [];
+  if (!ajustes.quitados[idRutina].includes(idEjercicio)) {
+    ajustes.quitados[idRutina].push(idEjercicio);
+  }
+  guardarPerfilYSubir();
+  return true;
+}
+
+function reponerEjercicio(idRutina, idEjercicio) {
+  if (!ajustes.quitados || !ajustes.quitados[idRutina]) return;
+  ajustes.quitados[idRutina] = ajustes.quitados[idRutina].filter(x => x !== idEjercicio);
+  guardarPerfilYSubir();
+}
+
 function agregarExtra(idRutina, idEjercicio) {
   if (!ajustes.extras) ajustes.extras = {};
   if (!ajustes.extras[idRutina]) ajustes.extras[idRutina] = [];
@@ -291,11 +319,20 @@ function quitarExtra(idRutina, idEjercicio) {
 
 /* Los ejercicios de una rutina: los de siempre más los agregados. */
 function ejerciciosDe(rutina) {
+  const fuera = quitadosDe(rutina.id);
+  const propios = rutina.ejercicios.filter(e => !fuera.includes(e.id));
   const extras = extrasDe(rutina.id).map(id => {
     const c = CATALOGO[id];
     return { id, series: 3, reps: c.tiempo ? 20 : 10, extra: true };
   });
-  return rutina.ejercicios.concat(extras);
+  return propios.concat(extras);
+}
+
+/* Cuántos ejercicios musculares quedarían si se saca este. El cardio no
+   cuenta: es la entrada en calor. */
+function quedanSinEl(rutina, idEjercicio) {
+  return ejerciciosDe(rutina)
+    .filter(e => e.id !== idEjercicio && CATALOGO[e.id].slot !== 'CARDIO').length;
 }
 
 /* Catálogo agrupado por grupo muscular, para elegir. */
@@ -355,7 +392,9 @@ $('#listaAgregar').addEventListener('click', ev => {
   const enSesion = $('#ejercicio').classList.contains('on');
   const laRutina = enSesion ? rutinaEnCurso() : DIAS[diaVisto].opciones[opcionElegida];
 
-  agregarExtra(laRutina.id, id);
+  // si es uno de los originales que había sacado, alcanza con reponerlo
+  if (quitadosDe(laRutina.id).includes(id)) reponerEjercicio(laRutina.id, id);
+  else agregarExtra(laRutina.id, id);
   $('#hoja-agregar').classList.remove('on');
 
   if (enSesion) {
@@ -373,7 +412,13 @@ $('#listaHoy').addEventListener('click', ev => {
   const b = ev.target.closest('[data-quitar]');
   if (!b) return;
   const rutina = DIAS[diaVisto].opciones[opcionElegida];
-  quitarExtra(rutina.id, b.dataset.quitar);
+  const id = b.dataset.quitar;
+  if (quedanSinEl(rutina, id) < 3) {
+    alert('La rutina quedaría con muy pocos ejercicios. Agregá otro antes de sacar este.');
+    return;
+  }
+  if (!confirm('¿Sacar ' + CATALOGO[id].nombre + ' de esta rutina?')) return;
+  sacarEjercicio(rutina.id, id);
   pintarListaEjercicios();
 });
 
@@ -993,7 +1038,8 @@ async function subirDatos() {
       headers: { 'Content-Type': 'application/json', 'X-Sesion': ajustes.sync.token },
       body: JSON.stringify(Object.assign({}, datos, {
         perfil: { nombre: ajustes.nombre, nacimiento: ajustes.nacimiento, tema: ajustes.tema },
-        extras: ajustes.extras || {}
+        extras: ajustes.extras || {},
+        quitados: ajustes.quitados || {}
       }))
     });
     if (r.status === 401) { ajustes.sync.token = null; guardarAjustes(); return { ok: false, vencida: true }; }
@@ -1025,6 +1071,7 @@ async function bajarDatos() {
       aplicarTema();
     }
     if (nuevo.extras) ajustes.extras = nuevo.extras;
+    if (nuevo.quitados) ajustes.quitados = nuevo.quitados;
     datos = nuevo;
     datos.duenio = ajustes.sync.email;
     almacen.guardar(datos);
@@ -1056,6 +1103,7 @@ async function entroGoogle(respuesta) {
       ajustes.nombre = '';
       ajustes.nacimiento = '';
       ajustes.extras = {};
+      ajustes.quitados = {};
       almacen.guardar(datos);
     }
 
@@ -1086,6 +1134,7 @@ function cerrarSesionGoogle() {
   ajustes.nombre = '';
   ajustes.nacimiento = '';
   ajustes.extras = {};
+  ajustes.quitados = {};
   guardarAjustes();
   pintarSync();
   pintarPortada();

@@ -46,7 +46,7 @@ const CATALOGO = {
     'Cuerpo en línea recta, cadera bien arriba.',
     'Codo justo debajo del hombro.',
     'Mismo tiempo de cada lado.'] },
-  Hyperextensions_Back_Extensions: { nombre:'Banco lumbar', slot:'ZONA MEDIA', carga:false, lumbar:true, claves:[
+  Hyperextensions_Back_Extensions: { nombre:'Banco lumbar', slot:'ZONA LUMBAR', carga:false, lumbar:true, claves:[
     'Subí solo hasta que el cuerpo quede recto, no más.',
     'Movimiento lento, sin impulso.',
     'Ante cualquier molestia en la zona baja, pará.'] },
@@ -267,6 +267,38 @@ const CATALOGO = {
     'Abdomen firme para no arquear la espalda.',
     'Estirá completo sin trabar el codo.'] },
 
+  /* ---------- zona lumbar ----------
+     Sólo estabilización y movilidad, con la columna apoyada o neutra.
+     A propósito sin hiperextensiones ni peso muerto: son extensión de
+     columna con carga, lo que conviene evitar con antecedente lumbar. */
+  'Pelvic_Tilt_Into_Bridge': { nombre:'Báscula de cadera al puente', slot:'ZONA LUMBAR', carga:false, claves:[
+    'Acostada, pegá la zona baja de la espalda al piso.',
+    'Subí la cadera despacio, vértebra por vértebra.',
+    'Bajá igual de lento, sin dejarte caer.'] },
+  'Standing_Pelvic_Tilt': { nombre:'Báscula de cadera de pie', slot:'ZONA LUMBAR', carga:false, claves:[
+    'De pie, espalda apoyada en la pared.',
+    'Llevá el ombligo hacia adentro para pegar la zona baja a la pared.',
+    'Sostené tres segundos y soltá.'] },
+  'Cat_Stretch': { nombre:'Gato y camello', slot:'ZONA LUMBAR', carga:false, claves:[
+    'En cuatro apoyos, redondeá y arqueá la espalda alternando.',
+    'Movimiento lento, acompañando la respiración.',
+    'Sin forzar en ninguno de los dos extremos.'] },
+  'Hug_Knees_To_Chest': { nombre:'Rodillas al pecho', slot:'ZONA LUMBAR', carga:false, claves:[
+    'Acostada, llevá las dos rodillas al pecho.',
+    'Abrazalas y sostené sin tirar fuerte.',
+    'Ideal para terminar el día de piernas.'] },
+  'Childs_Pose': { nombre:'Postura del niño', slot:'ZONA LUMBAR', carga:false, claves:[
+    'Sentada sobre los talones, estirá los brazos adelante.',
+    'Dejá caer el pecho hacia el piso.',
+    'Respirá hondo y sostené.'] },
+  'Hug_A_Ball': { nombre:'Abrazo sobre la pelota', slot:'ZONA LUMBAR', carga:false, claves:[
+    'De rodillas, abrazá la pelota y dejá caer el pecho.',
+    'La espalda queda redondeada pero sin tensión.',
+    'Sostené sin rebotar.'] },
+  'Lower_Back-SMR': { nombre:'Rodillo en la espalda baja', slot:'ZONA LUMBAR', carga:false, claves:[
+    'El rodillo debajo de la zona baja, rodá despacio.',
+    'Si duele puntualmente, parate ahí y esperá.',
+    'Nunca sobre la columna, sólo a los costados.'] },
   // ---------- ampliación del catálogo ----------
   Hack_Squat: { nombre:'Sentadilla hack', slot:'CUÁDRICEPS', carga:true, claves:[
     'Espalda y cadera bien apoyadas en el respaldo.',
@@ -647,107 +679,107 @@ const DIAS = [
 
     { id:'piernas-maquinas', titulo:'En máquinas',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
-      { id:'Leg_Press', series:3, reps:10, alts:['Bodyweight_Squat','Leg_Extensions'] },
-      { id:'Leg_Extensions', series:3, reps:10, alts:['Leg_Press'] },
-      { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Seated_Leg_Curl','Standing_Leg_Curl'] },
-      { id:'Seated_Leg_Curl', series:3, reps:10, alts:['Lying_Leg_Curls','Ball_Leg_Curl'] },
-      { id:'Seated_Calf_Raise', series:3, reps:12, alts:['Standing_Calf_Raises','Calf_Press_On_The_Leg_Press_Machine'] }
-    ]},
+        { id:'Bicycling_Stationary', tiempo:180 },
+        { id:'Side_Bridge', series:3, reps:20 },
+        { id:'Hack_Squat', series:3, reps:10 },
+        { id:'Single-Leg_Leg_Extension', series:3, reps:10 },
+        { id:'Seated_Leg_Curl', series:3, reps:10 },
+        { id:'Platform_Hamstring_Slides', series:3, reps:10 },
+        { id:'Seated_Calf_Raise', series:3, reps:10 }
+      ]},
 
     { id:'piernas-libres', titulo:'Con peso libre',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
-      { id:'Dumbbell_Lunges', series:3, reps:10, alts:['Dumbbell_Rear_Lunge','Step-up_with_Knee_Raise'] },
-      { id:'Bodyweight_Squat', series:3, reps:15, alts:['Leg_Press','Leg_Extensions'] },
-      { id:'Ball_Leg_Curl', series:3, reps:12, alts:['Lying_Leg_Curls','Seated_Leg_Curl'] },
-      { id:'Standing_Leg_Curl', series:3, reps:10, alts:['Seated_Leg_Curl','Lying_Leg_Curls'] },
-      { id:'Standing_Dumbbell_Calf_Raise', series:3, reps:12, alts:['Standing_Calf_Raises','Seated_Calf_Raise'] }
-    ]},
+        { id:'Jogging_Treadmill', tiempo:180 },
+        { id:'Dead_Bug', series:3, reps:10 },
+        { id:'Goblet_Squat', series:3, reps:10 },
+        { id:'Bodyweight_Squat', series:3, reps:10 },
+        { id:'Ball_Leg_Curl', series:3, reps:10 },
+        { id:'Seated_Band_Hamstring_Curl', series:3, reps:10 },
+        { id:'Calf_Raise_On_A_Dumbbell', series:3, reps:10 }
+      ]},
 
     { id:'piernas-unilateral', titulo:'Pierna por pierna',
       grupos:['Cuádriceps','Femorales','Gemelos'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
-      { id:'Step-up_with_Knee_Raise', series:3, reps:10, alts:['Dumbbell_Lunges','Dumbbell_Rear_Lunge'] },
-      { id:'Dumbbell_Rear_Lunge', series:3, reps:10, alts:['Dumbbell_Lunges','Step-up_with_Knee_Raise'] },
-      { id:'Standing_Leg_Curl', series:3, reps:10, alts:['Lying_Leg_Curls','Ball_Leg_Curl'] },
-      { id:'Lying_Leg_Curls', series:3, reps:10, alts:['Seated_Leg_Curl'] },
-      { id:'Calf_Press_On_The_Leg_Press_Machine', series:3, reps:12, alts:['Seated_Calf_Raise','Standing_Calf_Raises'] }
-    ]}
+        { id:'Elliptical_Trainer', tiempo:180 },
+        { id:'Butt-Ups', series:3, reps:10 },
+        { id:'Split_Squat_with_Dumbbells', series:3, reps:10 },
+        { id:'Dumbbell_Rear_Lunge', series:3, reps:10 },
+        { id:'Single_Leg_Push-off', series:3, reps:10 },
+        { id:'Standing_Leg_Curl', series:3, reps:10 },
+        { id:'Dumbbell_Seated_One-Leg_Calf_Raise', series:3, reps:10 }
+      ]}
   ]},
 
   { n:2, region:'Tren superior', resumen:'Hombro, bíceps, tríceps, pecho y espalda', opciones:[
 
     { id:'superior-mancuernas', titulo:'Con mancuernas',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Hyperextensions_Back_Extensions', series:3, reps:10, alts:['Plank','Side_Bridge'] },
-      { id:'Dumbbell_Shoulder_Press', series:3, reps:10, alts:['Arnold_Dumbbell_Press'] },
-      { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
-      { id:'Bent_Over_Two-Dumbbell_Row', series:3, reps:10, alts:['Seated_Cable_Rows'] },
-      { id:'Alternate_Hammer_Curl', series:3, reps:10, alts:['Hammer_Curls','Machine_Bicep_Curl'] },
-      { id:'Lying_Triceps_Press', series:3, reps:10, alts:['Triceps_Pushdown'] }
-    ]},
+        { id:'Jogging_Treadmill', tiempo:180 },
+        { id:'Pallof_Press_With_Rotation', series:3, reps:10 },
+        { id:'Standing_Palms-In_Dumbbell_Press', series:3, reps:10 },
+        { id:'Incline_Dumbbell_Press', series:3, reps:10 },
+        { id:'Incline_Bench_Pull', series:3, reps:10 },
+        { id:'Alternate_Hammer_Curl', series:3, reps:10 },
+        { id:'Close-Grip_Dumbbell_Press', series:3, reps:10 }
+      ]},
 
     { id:'superior-poleas', titulo:'En poleas',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
-      { id:'Wide-Grip_Lat_Pulldown', series:3, reps:10, alts:['One_Arm_Lat_Pulldown'] },
-      { id:'Incline_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Bench_Press'] },
-      { id:'Face_Pull', series:3, reps:10, alts:['Side_Lateral_Raise'] },
-      { id:'Machine_Bicep_Curl', series:3, reps:10, alts:['Hammer_Curls','Alternate_Hammer_Curl'] },
-      { id:'Triceps_Pushdown', series:3, reps:10, alts:['Cable_Rope_Overhead_Triceps_Extension'] }
-    ]},
+        { id:'Elliptical_Trainer', tiempo:180 },
+        { id:'Side_Bridge', series:3, reps:20 },
+        { id:'Seated_Cable_Shoulder_Press', series:3, reps:10 },
+        { id:'Cable_Crossover', series:3, reps:10 },
+        { id:'V-Bar_Pulldown', series:3, reps:10 },
+        { id:'High_Cable_Curls', series:3, reps:10 },
+        { id:'Low_Cable_Triceps_Extension', series:3, reps:10 }
+      ]},
 
     { id:'superior-mixto', titulo:'Mixto',
       grupos:['Hombro','Bíceps','Tríceps','Pecho','Espalda'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Air_Bike', series:3, reps:15, alts:['Crunches','Plank'] },
-      { id:'Arnold_Dumbbell_Press', series:3, reps:10, alts:['Dumbbell_Shoulder_Press'] },
-      { id:'Seated_Cable_Rows', series:3, reps:10, alts:['Bent_Over_Two-Dumbbell_Row'] },
-      { id:'Dumbbell_Bench_Press', series:3, reps:10, alts:['Incline_Dumbbell_Press'] },
-      { id:'Hammer_Curls', series:3, reps:10, alts:['Alternate_Hammer_Curl','Machine_Bicep_Curl'] },
-      { id:'Cable_Rope_Overhead_Triceps_Extension', series:3, reps:10, alts:['Triceps_Pushdown','Lying_Triceps_Press'] }
-    ]}
+        { id:'Bicycling_Stationary', tiempo:180 },
+        { id:'Crunches', series:3, reps:10 },
+        { id:'Leverage_Shoulder_Press', series:3, reps:10 },
+        { id:'Machine_Bench_Press', series:3, reps:10 },
+        { id:'Lying_T-Bar_Row', series:3, reps:10 },
+        { id:'Machine_Preacher_Curls', series:3, reps:10 },
+        { id:'Machine_Triceps_Extension', series:3, reps:10 }
+      ]}
   ]},
 
-  { n:3, region:'Abdomen y glúteo', resumen:'Abdomen, glúteo, aductores y abductores', opciones:[
+  { n:3, region:'Abdomen, glúteo y cuádriceps', resumen:'Abdomen, glúteo, cuádriceps y abductores', opciones:[
 
     { id:'abdomen-gluteo-maquinas', titulo:'En máquinas',
-      grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
-      { id:'Bicycling_Stationary', minutos:3, alts:['Elliptical_Trainer','Jogging_Treadmill'] },
-      { id:'Plank', series:3, reps:20, alts:['Side_Bridge','Crunches'] },
-      { id:'Ab_Crunch_Machine', series:3, reps:12, alts:['Cable_Crunch','Crunches'] },
-      { id:'Barbell_Hip_Thrust', series:3, reps:10, alts:['Butt_Lift_Bridge','Single_Leg_Glute_Bridge'] },
-      { id:'One-Legged_Cable_Kickback', series:3, reps:10, alts:['Glute_Kickback'] },
-      { id:'Thigh_Adductor', series:3, reps:12, alts:['Band_Hip_Adductions'] },
-      { id:'Thigh_Abductor', series:3, reps:12, alts:['Glute_Kickback'] }
-    ]},
+      grupos:['Abdomen','Glúteo','Cuádriceps','Abductores'], ejercicios:[
+        { id:'Bicycling_Stationary', tiempo:180 },
+        { id:'Plank', series:3, reps:20 },
+        { id:'Ab_Crunch_Machine', series:3, reps:10 },
+        { id:'Barbell_Hip_Thrust', series:3, reps:10 },
+        { id:'One-Legged_Cable_Kickback', series:3, reps:10 },
+        { id:'Narrow_Stance_Leg_Press', series:3, reps:10 },
+        { id:'Thigh_Abductor', series:3, reps:10 }
+      ]},
 
     { id:'abdomen-gluteo-piso', titulo:'En colchoneta',
-      grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
-      { id:'Elliptical_Trainer', minutos:3, alts:['Jogging_Treadmill','Bicycling_Stationary'] },
-      { id:'Side_Bridge', series:3, reps:20, alts:['Plank','Air_Bike'] },
-      { id:'Reverse_Crunch', series:3, reps:12, alts:['Cross-Body_Crunch','Crunches'] },
-      { id:'Single_Leg_Glute_Bridge', series:3, reps:12, alts:['Butt_Lift_Bridge','Barbell_Hip_Thrust'] },
-      { id:'Glute_Kickback', series:3, reps:12, alts:['One-Legged_Cable_Kickback'] },
-      { id:'Band_Hip_Adductions', series:3, reps:12, alts:['Thigh_Adductor'] },
-      { id:'Thigh_Abductor', series:3, reps:12, alts:['Glute_Kickback'] }
-    ]},
+      grupos:['Abdomen','Glúteo','Cuádriceps','Abductores'], ejercicios:[
+        { id:'Elliptical_Trainer', tiempo:180 },
+        { id:'Side_Bridge', series:3, reps:20 },
+        { id:'Reverse_Crunch', series:3, reps:10 },
+        { id:'Single_Leg_Glute_Bridge', series:3, reps:10 },
+        { id:'Butt_Lift_Bridge', series:3, reps:10 },
+        { id:'Chair_Squat', series:3, reps:10 },
+        { id:'Side_Leg_Raises', series:3, reps:10 }
+      ]},
 
     { id:'abdomen-gluteo-completo', titulo:'Completo',
-      grupos:['Abdomen','Glúteo','Aductores','Abductores'], ejercicios:[
-      { id:'Jogging_Treadmill', minutos:3, alts:['Elliptical_Trainer','Bicycling_Stationary'] },
-      { id:'Crunches', series:3, reps:15, alts:['Air_Bike','Plank'] },
-      { id:'Cable_Crunch', series:3, reps:12, alts:['Ab_Crunch_Machine','Decline_Crunch'] },
-      { id:'Butt_Lift_Bridge', series:3, reps:12, alts:['Barbell_Hip_Thrust','Single_Leg_Glute_Bridge'] },
-      { id:'Thigh_Adductor', series:3, reps:12, alts:['Band_Hip_Adductions'] },
-      { id:'Thigh_Abductor', series:3, reps:12, alts:['Glute_Kickback'] },
-      { id:'Cross-Body_Crunch', series:3, reps:15, alts:['Reverse_Crunch','Decline_Crunch'] }
-    ]}
+      grupos:['Abdomen','Glúteo','Cuádriceps','Abductores'], ejercicios:[
+        { id:'Jogging_Treadmill', tiempo:180 },
+        { id:'Dead_Bug', series:3, reps:10 },
+        { id:'Rope_Crunch', series:3, reps:10 },
+        { id:'Barbell_Glute_Bridge', series:3, reps:10 },
+        { id:'Glute_Kickback', series:3, reps:10 },
+        { id:'Goblet_Squat', series:3, reps:10 },
+        { id:'Monster_Walk', series:3, reps:10 }
+      ]}
   ]}
 ];
